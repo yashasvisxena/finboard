@@ -1,5 +1,4 @@
-import { Button } from '@/components/ui/button';
-
+import { AddWidgetDialog } from '../dashboard/AddWidgetDialog';
 import { ThemeToggle } from './ThemeToggle';
 
 const Navbar = () => {
@@ -12,7 +11,7 @@ const Navbar = () => {
         </p>
       </div>
       <div className='flex gap-2 items-center justify-end'>
-        <Button className='p-2'>Add Widget</Button>
+        <AddWidgetDialog />
         <ThemeToggle />
       </div>
     </div>
