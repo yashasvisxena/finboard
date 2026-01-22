@@ -1,10 +1,7 @@
 import { cn } from '@/lib/utils';
 import * as React from 'react';
 
-function Button({
-  className,
-  ...props
-}: React.ComponentProps<'button'>) {
+function Button({ className, ...props }: React.ComponentProps<'button'>) {
   return (
     <button
       data-slot='button'

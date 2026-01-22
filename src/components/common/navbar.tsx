@@ -1,5 +1,6 @@
-import { ThemeToggle } from '../ThemeToggle';
-import { Button } from '../ui/button';
+import { Button } from '@/components/ui/button';
+
+import { ThemeToggle } from './ThemeToggle';
 
 const Navbar = () => {
   return (
