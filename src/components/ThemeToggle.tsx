@@ -1,34 +1,20 @@
 'use client';
 
 import { useTheme } from '@/context/ThemeContext';
-import { MoonIcon, SunIcon } from 'lucide-react';
+import { Moon, Sun } from 'lucide-react';
 
 import { Button } from './ui/button';
-import { Select } from './ui/select';
 
 export function ThemeToggle() {
-  const { theme, setTheme, resolvedTheme } = useTheme();
-
-  const themeIconMap = {
-    light: <SunIcon className='w-4 h-4' />,
-    dark: <MoonIcon className='w-4 h-4' />,
-  };
+  const { theme, setTheme } = useTheme();
 
   return (
-    <div>
-      <Select
-        value={theme}
-        onValueChange={(value) =>
-          setTheme(value as 'light' | 'system' | 'dark')
-        }
-        trigger={
-          <Button className='size-10'>{themeIconMap[resolvedTheme]}</Button>
-        }
-      >
-        <option value='light'>Light</option>
-        <option value='dark'>Dark</option>
-        <option value='system'>System</option>
-      </Select>
-    </div>
+    <Button
+      className='size-10'
+      onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}
+    >
+      <Sun className='h-[1.2rem] w-[1.2rem] scale-100 rotate-0 transition-all dark:scale-0 dark:-rotate-90' />
+      <Moon className='absolute h-[1.2rem] w-[1.2rem] scale-0 rotate-90 transition-all dark:scale-100 dark:rotate-0' />
+    </Button>
   );
 }
