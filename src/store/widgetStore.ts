@@ -1,6 +1,6 @@
 'use client';
 
-import { Widget } from '@/lib/types/widgets';
+import { Widget } from '@/types/widgets';
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 

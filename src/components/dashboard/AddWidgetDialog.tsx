@@ -1,4 +1,4 @@
-import { Button } from '../ui/button';
+import { Button } from '@/components/ui/button';
 import {
   Dialog,
   DialogClose,
@@ -8,13 +8,17 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from '../ui/dialog';
+} from '@/components/ui/dialog';
 
-export const AddWidgetDialog = () => {
+export const AddWidgetDialog = ({
+  children,
+}: {
+  children?: React.ReactNode;
+}) => {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button>Add Widget</Button>
+        {children || <Button>Add Widget</Button>}
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>

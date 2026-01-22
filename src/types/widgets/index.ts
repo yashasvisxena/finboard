@@ -7,11 +7,12 @@ export interface BaseWidget {
   link: string;
   icon: IconType;
   data: any;
+  duration?: number;
 }
 
 export interface TableWidget extends BaseWidget {
   icon: 'table';
-  pagination: {
+  pagination?: {
     limit: number;
     offset: number;
     total: number;

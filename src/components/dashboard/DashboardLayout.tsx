@@ -1,4 +1,5 @@
 'use client';
+import { Button } from '@/components/ui/button';
 import {
   Card,
   CardContent,
@@ -7,33 +8,36 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import { moveItem } from '@/lib/utils';
+import { Widget } from '@/types/widgets';
+import { Plus } from 'lucide-react';
 import { type DragEvent, useState } from 'react';
 
-type Widget = {
-  id: string;
-  title: string;
-  description: string;
-  body: string;
-};
+import { AddWidgetDialog } from './AddWidgetDialog';
 
 const INITIAL_WIDGETS: Widget[] = [
   {
     id: 'overview',
     title: 'Overview',
     description: 'High-level summary of your finances.',
-    body: "This is a placeholder widget. You'll be able to configure real widgets here later.",
+    icon: 'card',
+    link: '/dashboard/overview',
+    data: {},
   },
   {
     id: 'recent-activity',
     title: 'Recent Activity',
     description: 'Track your latest transactions.',
-    body: 'Add a transactions table widget to see your latest activity.',
+    icon: 'table',
+    link: '/dashboard/recent-activity',
+    data: {},
   },
   {
     id: 'performance',
     title: 'Performance',
     description: 'Visualize how your portfolio is moving.',
-    body: 'Later this area will host charts powered by real market data.',
+    icon: 'chart',
+    link: '/dashboard/performance',
+    data: {},
   },
 ];
 
@@ -69,7 +73,7 @@ const DashboardLayout = () => {
   };
 
   return (
-    <main className='grid gap-4 md:grid-cols-2 xl:grid-cols-3 p-4'>
+    <main className='grid gap-4 grid-cols-1 md:grid-cols-2 xl:grid-cols-3 p-4'>
       {widgets.map((widget) => (
         <Card
           key={widget.id}
@@ -84,13 +88,20 @@ const DashboardLayout = () => {
         >
           <CardHeader>
             <CardTitle>{widget.title}</CardTitle>
-            <CardDescription>{widget.description}</CardDescription>
           </CardHeader>
           <CardContent>
-            <p className='text-sm text-muted-foreground'>{widget.body}</p>
+            <p className='text-sm text-muted-foreground'>
+              {widget.description}
+            </p>
           </CardContent>
         </Card>
       ))}
+      <AddWidgetDialog>
+        <Button className='col-span-1 h-full min-h-[150px] border-2 border-dashed bg-background text-foreground hover:bg-background/80 hover:text-foreground'>
+          <Plus className='size-4' />
+          Add Widget
+        </Button>
+      </AddWidgetDialog>
     </main>
   );
 };
