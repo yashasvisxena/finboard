@@ -1,5 +1,13 @@
 import { WidgetApiConfig, WidgetDisplayConfig } from './apiTypes';
 
+export type WidgetSize =
+  | 'small'
+  | 'medium'
+  | 'large'
+  | 'wide'
+  | 'tall'
+  | 'full';
+
 export type IconType = 'table' | 'chart' | 'card';
 
 export interface BaseWidget {
@@ -7,6 +15,7 @@ export interface BaseWidget {
   title: string;
   description?: string;
   icon: IconType;
+  size: WidgetSize;
 
   api: WidgetApiConfig;
   display?: WidgetDisplayConfig;
@@ -33,11 +42,3 @@ export interface CardWidget extends BaseWidget {
 }
 
 export type Widget = TableWidget | ChartWidget | CardWidget;
-
-export interface WidgetLayout {
-  i: string;
-  x: number;
-  y: number;
-  w: number;
-  h: number;
-}
