@@ -1,7 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { sizeClasses } from '@/constants/widgets';
 import { cn } from '@/lib/utils';
-import { Widget, WidgetSize } from '@/types/widgets/widgetTypes';
+import { Widget, WidgetSize } from '@/types/widget.types';
 import { ChartBar, GripVertical, Sheet, Table } from 'lucide-react';
 import { memo } from 'react';
 

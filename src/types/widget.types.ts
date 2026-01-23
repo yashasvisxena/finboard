@@ -1,4 +1,7 @@
-import { WidgetApiConfig, WidgetDisplayConfig } from './apiTypes';
+import {
+  WidgetApiConfig,
+  WidgetDisplayConfig,
+} from '@/services/api/core/api.types';
 
 export type WidgetSize =
   | 'small'

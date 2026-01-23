@@ -1,4 +1,4 @@
-import { WidgetSize } from '@/types/widgets/widgetTypes';
+import { WidgetSize } from '@/types/widget.types';
 import { ChartBar, Sheet, Table } from 'lucide-react';
 
 export const sizeClasses: Record<WidgetSize, string> = {
