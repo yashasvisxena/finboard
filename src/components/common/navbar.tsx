@@ -7,14 +7,14 @@ import { AddWidgetDialog } from '../add-widget-dialog/AddWidgetDialog';
 import { ThemeToggle } from './ThemeToggle';
 
 const Navbar = () => {
-  const { widgets } = useWidgetStore();
+  const widgetsCount = useWidgetStore((state) => state.widgets.length);
 
   const statusText = useMemo(
     () =>
-      widgets.length > 0
-        ? `${widgets.length} active widget${widgets.length !== 1 ? 's' : ''}`
+      widgetsCount > 0
+        ? `${widgetsCount} active widget${widgetsCount !== 1 ? 's' : ''}`
         : 'Connect to APIs and build your custom dashboard',
-    [widgets.length]
+    [widgetsCount]
   );
 
   return (

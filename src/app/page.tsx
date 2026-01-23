@@ -12,6 +12,7 @@ const DashboardLayout = dynamic(() => import('@/components/dashboard'), {
       ))}
     </div>
   ),
+  ssr: false,
 });
 
 export default function Home() {
