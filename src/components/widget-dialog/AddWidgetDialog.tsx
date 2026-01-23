@@ -10,6 +10,10 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog';
 
+import { WidgetApiSection } from './widgetApiSection';
+import { WidgetBasicSection } from './widgetBasicSection';
+import { WidgetRefreshSection } from './widgetRefreshSection';
+
 export const AddWidgetDialog = ({
   children,
 }: {
@@ -18,20 +22,27 @@ export const AddWidgetDialog = ({
   return (
     <Dialog>
       <DialogTrigger asChild>
-        {children || <Button>Add Widget</Button>}
+        <Button size='lg'>Add Widget</Button>
       </DialogTrigger>
-      <DialogContent>
+      <DialogContent className='max-w-xl'>
         <DialogHeader>
           <DialogTitle>Add Widget</DialogTitle>
-          <DialogDescription>Add a widget to your dashboard</DialogDescription>
+          <DialogDescription>
+            Configure a finance widget for your dashboard
+          </DialogDescription>
         </DialogHeader>
+
+        <div className='space-y-5'>
+          <WidgetBasicSection />
+          <WidgetApiSection />
+          <WidgetRefreshSection />
+        </div>
+
         <DialogFooter>
           <DialogClose asChild>
             <Button>Cancel</Button>
           </DialogClose>
-          <DialogClose asChild>
-            <Button>Save changes</Button>
-          </DialogClose>
+          <Button>Add Widget</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

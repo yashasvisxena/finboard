@@ -12,7 +12,7 @@ import { Widget } from '@/types/widgets';
 import { Plus } from 'lucide-react';
 import { type DragEvent, useState } from 'react';
 
-import { AddWidgetDialog } from './AddWidgetDialog';
+import { AddWidgetDialog } from '../widget-dialog/AddWidgetDialog';
 
 const INITIAL_WIDGETS: Widget[] = [
   {
@@ -97,7 +97,10 @@ const DashboardLayout = () => {
         </Card>
       ))}
       <AddWidgetDialog>
-        <Button className='col-span-1 h-full min-h-[150px] border-2 border-dashed bg-background text-foreground hover:bg-background/80 hover:text-foreground'>
+        <Button
+          className='col-span-1 h-full min-h-[150px] border-2 border-dashed border-border'
+          variant='outline'
+        >
           <Plus className='size-4' />
           Add Widget
         </Button>
