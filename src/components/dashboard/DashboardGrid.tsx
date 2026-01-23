@@ -1,6 +1,7 @@
 'use client';
 
 import { useWidgetStore } from '@/store/widgetStore';
+import { ArrowBigDown } from 'lucide-react';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import GridLayout, { Layout, ResponsiveGridLayout } from 'react-grid-layout';
 import 'react-grid-layout/css/styles.css';
@@ -36,6 +37,9 @@ export default function DashboardGrid() {
         width={width}
         dragConfig={{
           handle: '.drag-handle',
+        }}
+        resizeConfig={{
+          handles: ['s', 'e', 'n', 'w', 'se', 'sw', 'ne', 'nw'],
         }}
         onLayoutChange={updateLayouts}
       >
