@@ -1,4 +1,4 @@
-import { AddWidgetDialog } from '../widget-dialog/AddWidgetDialog';
+import { AddWidgetDialog } from '../add-widget-dialog/AddWidgetDialog';
 import { ThemeToggle } from './ThemeToggle';
 
 const Navbar = () => {

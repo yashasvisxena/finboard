@@ -1,11 +1,11 @@
 import Navbar from '@/components/common/navbar';
-import DashboardLayout from '@/components/dashboard';
+import DashboardGrid from '@/components/dashboard/DashboardGrid';
 
 export default function Home() {
   return (
     <div>
       <Navbar />
-      <DashboardLayout />
+      <DashboardGrid />
     </div>
   );
 }

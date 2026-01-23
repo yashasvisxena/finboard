@@ -33,3 +33,11 @@ export interface CardWidget extends BaseWidget {
 }
 
 export type Widget = TableWidget | ChartWidget | CardWidget;
+
+export interface WidgetLayout {
+  i: string;
+  x: number;
+  y: number;
+  w: number;
+  h: number;
+}
