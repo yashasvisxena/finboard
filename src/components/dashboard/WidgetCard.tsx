@@ -1,8 +1,8 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { sizeClasses } from '@/constants/widgets';
-import { cn, getIcon } from '@/lib/utils';
+import { cn } from '@/lib/utils';
 import { Widget, WidgetSize } from '@/types/widgets/widgetTypes';
-import { GripVertical } from 'lucide-react';
+import { ChartBar, GripVertical, Sheet, Table } from 'lucide-react';
 import { memo } from 'react';
 
 interface WidgetCardProps {
@@ -15,6 +15,19 @@ interface WidgetCardProps {
   className?: string;
 }
 
+const WidgetIcon = memo(({ icon }: { icon: string }) => {
+  switch (icon) {
+    case 'table':
+      return <Table className='w-4 h-4' />;
+    case 'chart':
+      return <ChartBar className='w-4 h-4' />;
+    case 'card':
+    default:
+      return <Sheet className='w-4 h-4' />;
+  }
+});
+WidgetIcon.displayName = 'WidgetIcon';
+
 export const WidgetCard = memo(
   ({
     widget,
@@ -25,8 +38,6 @@ export const WidgetCard = memo(
     isDragging,
     className,
   }: WidgetCardProps) => {
-    const Icon = getIcon(widget.icon);
-
     return (
       <Card
         draggable
@@ -46,7 +57,7 @@ export const WidgetCard = memo(
         <CardHeader className='flex flex-row items-center gap-2 pb-3'>
           <GripVertical size={16} />
           <div className='p-2 rounded-lg'>
-            <Icon className='w-4 h-4' />
+            <WidgetIcon icon={widget.icon} />
           </div>
           <CardTitle className='text-base'>{widget.title}</CardTitle>
         </CardHeader>

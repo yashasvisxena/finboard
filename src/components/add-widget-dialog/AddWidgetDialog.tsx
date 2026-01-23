@@ -1,50 +1,39 @@
 import { Button } from '@/components/ui/button';
-import {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog';
+import dynamic from 'next/dynamic';
+import { memo, useState } from 'react';
 
-import { WidgetApiSection } from './widgetApiSection';
-import { WidgetBasicSection } from './widgetBasicSection';
-import { WidgetRefreshSection } from './widgetRefreshSection';
+const DialogContentLazy = dynamic(
+  () =>
+    import('./AddWidgetDialogContent').then((mod) => ({
+      default: mod.AddWidgetDialogContent,
+    })),
+  {
+    loading: () => (
+      <DialogContent className='max-w-xl max-h-[70vh] overflow-y-auto'>
+        {Array.from({ length: 5 }).map((_, i) => (
+          <div key={i} className='h-[10vh] animate-pulse bg-muted rounded' />
+        ))}
+      </DialogContent>
+    ),
+  }
+);
 
-export const AddWidgetDialog = ({
-  children,
-}: {
+interface AddWidgetDialogProps {
   children?: React.ReactNode;
-}) => {
+}
+
+export const AddWidgetDialog = memo(({ children }: AddWidgetDialogProps) => {
+  const [open, setOpen] = useState(false);
+
   return (
-    <Dialog>
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         {children || <Button size='lg'>Add Widget</Button>}
       </DialogTrigger>
-      <DialogContent className='max-w-xl max-h-[70vh] overflow-y-auto'>
-        <DialogHeader>
-          <DialogTitle>Add Widget</DialogTitle>
-          <DialogDescription>
-            Configure a finance widget for your dashboard
-          </DialogDescription>
-        </DialogHeader>
-
-        <div className='space-y-5'>
-          <WidgetBasicSection />
-          <WidgetApiSection />
-          <WidgetRefreshSection />
-        </div>
-
-        <DialogFooter>
-          <DialogClose asChild>
-            <Button variant='destructive'>Cancel</Button>
-          </DialogClose>
-          <Button>Add Widget</Button>
-        </DialogFooter>
-      </DialogContent>
+      {open && <DialogContentLazy />}
     </Dialog>
   );
-};
+});
+
+AddWidgetDialog.displayName = 'AddWidgetDialog';

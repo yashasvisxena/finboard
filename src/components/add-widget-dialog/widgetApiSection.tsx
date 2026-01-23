@@ -7,8 +7,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { memo } from 'react';
 
-export const WidgetApiSection = () => {
+export const WidgetApiSection = memo(() => {
   return (
     <div className='space-y-3'>
       <div className='space-y-2'>
@@ -46,4 +47,6 @@ export const WidgetApiSection = () => {
       </div>
     </div>
   );
-};
+});
+
+WidgetApiSection.displayName = 'WidgetApiSection';

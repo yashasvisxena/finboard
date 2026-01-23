@@ -54,7 +54,8 @@ export const useWidgetStore = create<WidgetStore>()(
     {
       name: 'widget-storage',
       partialize: (state) => ({
-        widgets: state.widgets.map(({ data, ...rest }) => rest),
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        widgets: state.widgets.map(({ data: _data, ...rest }) => rest),
       }),
     }
   )
