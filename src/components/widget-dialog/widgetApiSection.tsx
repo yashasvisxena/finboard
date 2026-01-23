@@ -11,7 +11,7 @@ import {
 export const WidgetApiSection = () => {
   return (
     <div className='space-y-3'>
-      <div>
+      <div className='space-y-2'>
         <Label>API Provider</Label>
         <Select>
           <SelectTrigger>
@@ -25,7 +25,7 @@ export const WidgetApiSection = () => {
         </Select>
       </div>
 
-      <div>
+      <div className='space-y-2'>
         <Label>API Endpoint</Label>
         <Select>
           <SelectTrigger>

@@ -3,7 +3,7 @@ import { Label } from '@/components/ui/label';
 
 export const WidgetRefreshSection = () => {
   return (
-    <div>
+    <div className='space-y-2'>
       <Label>Refresh Interval (seconds)</Label>
       <Input type='number' placeholder='30' min={5} />
       <p className='text-xs text-muted-foreground mt-1'>

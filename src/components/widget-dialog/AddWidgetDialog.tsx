@@ -22,7 +22,7 @@ export const AddWidgetDialog = ({
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button size='lg'>Add Widget</Button>
+        {children || <Button size='lg'>Add Widget</Button>}
       </DialogTrigger>
       <DialogContent className='max-w-xl'>
         <DialogHeader>
@@ -40,7 +40,7 @@ export const AddWidgetDialog = ({
 
         <DialogFooter>
           <DialogClose asChild>
-            <Button>Cancel</Button>
+            <Button variant='destructive'>Cancel</Button>
           </DialogClose>
           <Button>Add Widget</Button>
         </DialogFooter>
