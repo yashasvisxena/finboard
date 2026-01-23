@@ -13,13 +13,13 @@ export const WidgetBasicSection = () => {
     <div className='space-y-3'>
       <div className='space-y-2'>
         <Label>Widget Name</Label>
-        <Input placeholder='e.g. Market Gainers' />
+        <Input placeholder='e.g. Market Gainers' className='w-full' />
       </div>
 
       <div className='space-y-2'>
         <Label>Widget Type</Label>
         <Select>
-          <SelectTrigger>
+          <SelectTrigger className='w-full'>
             <SelectValue placeholder='Select widget type' />
           </SelectTrigger>
           <SelectContent>

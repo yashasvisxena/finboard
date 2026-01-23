@@ -24,7 +24,7 @@ export const AddWidgetDialog = ({
       <DialogTrigger asChild>
         {children || <Button size='lg'>Add Widget</Button>}
       </DialogTrigger>
-      <DialogContent className='max-w-xl'>
+      <DialogContent className='max-w-xl max-h-[70vh] overflow-y-auto'>
         <DialogHeader>
           <DialogTitle>Add Widget</DialogTitle>
           <DialogDescription>

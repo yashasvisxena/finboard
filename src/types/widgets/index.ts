@@ -1,13 +1,18 @@
+import { WidgetApiConfig, WidgetDisplayConfig } from './apiTypes';
+
 export type IconType = 'table' | 'chart' | 'card';
 
 export interface BaseWidget {
   id: string;
   title: string;
   description?: string;
-  link: string;
   icon: IconType;
-  data: any;
-  duration?: number;
+
+  api: WidgetApiConfig;
+  display?: WidgetDisplayConfig;
+
+  data?: unknown;
+  lastUpdated?: number;
 }
 
 export interface TableWidget extends BaseWidget {

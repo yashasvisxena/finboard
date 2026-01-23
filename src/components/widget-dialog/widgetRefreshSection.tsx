@@ -5,10 +5,7 @@ export const WidgetRefreshSection = () => {
   return (
     <div className='space-y-2'>
       <Label>Refresh Interval (seconds)</Label>
-      <Input type='number' placeholder='30' min={5} />
-      <p className='text-xs text-muted-foreground mt-1'>
-        Minimum 5 seconds recommended to avoid rate limits
-      </p>
+      <Input type='number' placeholder='30' min={5} className='w-full' />
     </div>
   );
 };

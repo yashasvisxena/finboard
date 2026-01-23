@@ -8,11 +8,11 @@ interface WidgetStore {
   widgets: Widget[];
   uiState: {
     id: string | null;
-    isEditMode?: boolean;
+    isEditMode: boolean;
   };
 
-  setWidgets: (widgets: Widget[]) => void;
   addWidget: (widget: Widget) => void;
+  updateWidget: (id: string, widget: Partial<Widget>) => void;
   deleteWidget: (id: string) => void;
   setEditMode: (id: string | null) => void;
 }
@@ -21,37 +21,34 @@ export const useWidgetStore = create<WidgetStore>()(
   persist(
     (set) => ({
       widgets: [],
+      uiState: { id: null, isEditMode: false },
 
-      uiState: {
-        id: null,
-        isEditMode: false,
-      },
+      addWidget: (widget) => set((s) => ({ widgets: [...s.widgets, widget] })),
 
-      setWidgets: (widgets) => set({ widgets }),
-
-      addWidget: (widget) =>
-        set((state) => ({
-          widgets: [...state.widgets, widget],
+      updateWidget: (id, widget) =>
+        set((s) => ({
+          widgets: s.widgets.map((w) =>
+            w.id === id ? { ...w, ...widget } : w
+          ),
         })),
 
       deleteWidget: (id) =>
-        set((state) => ({
-          widgets: state.widgets.filter((w) => w.id !== id),
+        set((s) => ({
+          widgets: s.widgets.filter((w) => w.id !== id),
         })),
 
-      setEditMode: (id: string | null) =>
-        set((state) => ({
+      setEditMode: (id) =>
+        set({
           uiState: {
-            ...state.uiState,
             id,
-            isEditMode: true,
+            isEditMode: Boolean(id),
           },
-        })),
+        }),
     }),
     {
       name: 'widget-storage',
       partialize: (state) => ({
-        widgets: state.widgets,
+        widgets: state.widgets.map(({ data, ...rest }) => rest),
       }),
     }
   )

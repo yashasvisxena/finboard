@@ -14,7 +14,7 @@ export const WidgetApiSection = () => {
       <div className='space-y-2'>
         <Label>API Provider</Label>
         <Select>
-          <SelectTrigger>
+          <SelectTrigger className='w-full'>
             <SelectValue placeholder='Select provider' />
           </SelectTrigger>
           <SelectContent>
@@ -28,7 +28,7 @@ export const WidgetApiSection = () => {
       <div className='space-y-2'>
         <Label>API Endpoint</Label>
         <Select>
-          <SelectTrigger>
+          <SelectTrigger className='w-full'>
             <SelectValue placeholder='Select endpoint' />
           </SelectTrigger>
           <SelectContent>
@@ -40,7 +40,6 @@ export const WidgetApiSection = () => {
         </Select>
       </div>
 
-      {/* Optional advanced */}
       <div className='flex items-center gap-2'>
         <Checkbox />
         <span className='text-sm'>Use custom API URL</span>
