@@ -40,61 +40,63 @@ export const widgetMappingSchema = z.discriminatedUnion('type', [
   cardMappingSchema,
 ]);
 
+export const widgetApiConfigSchema = z
+  .object({
+    useCustomUrl: z.boolean(),
+
+    provider: z.enum(['finnhub', 'indianApi']).optional(),
+
+    url: z.string().url('Invalid URL').or(z.literal('')).optional(),
+
+    apiName: z.string().optional(),
+    refreshInterval: z.number().min(1, 'Minimum 1 second'),
+    params: z.record(
+      z.string(),
+      z.union([z.string(), z.number(), z.boolean()])
+    ),
+    paramsArray: z
+      .array(
+        z.object({
+          key: z.string(),
+          type: z.enum(['string', 'number', 'boolean']),
+          value: z.union([z.string(), z.number(), z.boolean()]),
+        })
+      )
+      .optional(),
+  })
+  .superRefine((data, ctx) => {
+    if (!data.useCustomUrl) {
+      if (!data.provider) {
+        ctx.addIssue({
+          path: ['provider'],
+          message: 'API provider is required',
+          code: 'custom',
+        });
+      }
+      if (!data.apiName) {
+        ctx.addIssue({
+          path: ['apiName'],
+          message: 'API name is required',
+          code: 'custom',
+        });
+      }
+    }
+
+    if (data.useCustomUrl && !data.url) {
+      ctx.addIssue({
+        path: ['url'],
+        message: 'Custom API URL is required',
+        code: 'custom',
+      });
+    }
+  });
+
 export const createWidgetSchema = z.object({
   title: z.string().min(1, 'Title is required'),
   description: z.string().optional(),
   type: z.enum(['card', 'chart', 'table']),
 
-  api: z
-    .object({
-      useCustomUrl: z.boolean(),
-
-      provider: z.enum(['finnhub', 'indianApi']).optional(),
-
-      url: z.string().url('Invalid URL').or(z.literal('')).optional(),
-
-      apiName: z.string().optional(),
-      refreshInterval: z.number().min(1, 'Minimum 1 second'),
-      params: z.record(
-        z.string(),
-        z.union([z.string(), z.number(), z.boolean()])
-      ),
-      paramsArray: z
-        .array(
-          z.object({
-            key: z.string(),
-            type: z.enum(['string', 'number', 'boolean']),
-            value: z.union([z.string(), z.number(), z.boolean()]),
-          })
-        )
-        .optional(),
-    })
-    .superRefine((data, ctx) => {
-      if (!data.useCustomUrl) {
-        if (!data.provider) {
-          ctx.addIssue({
-            path: ['provider'],
-            message: 'API provider is required',
-            code: 'custom',
-          });
-        }
-        if (!data.apiName) {
-          ctx.addIssue({
-            path: ['apiName'],
-            message: 'API name is required',
-            code: 'custom',
-          });
-        }
-      }
-
-      if (data.useCustomUrl && !data.url) {
-        ctx.addIssue({
-          path: ['url'],
-          message: 'Custom API URL is required',
-          code: 'custom',
-        });
-      }
-    }),
+  api: widgetApiConfigSchema,
 
   mapping: widgetMappingSchema,
 });

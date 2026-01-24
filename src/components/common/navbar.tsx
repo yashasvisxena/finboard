@@ -4,6 +4,7 @@ import { useWidgetStore } from '@/store/widgetStore';
 import { useMemo } from 'react';
 
 import { AddWidgetDialog } from '../add-widget-dialog/AddWidgetDialog';
+import { ConfigBackupDialog } from '../config-backup/ConfigBackupDialog';
 import { ThemeToggle } from './ThemeToggle';
 
 const Navbar = () => {
@@ -24,6 +25,7 @@ const Navbar = () => {
         <p className='text-sm text-muted-foreground'>{statusText}</p>
       </div>
       <div className='flex gap-2 items-center justify-end'>
+        <ConfigBackupDialog />
         <AddWidgetDialog />
         <ThemeToggle />
       </div>

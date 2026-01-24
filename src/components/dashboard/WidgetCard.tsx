@@ -1,10 +1,9 @@
 'use client';
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { sizeClasses } from '@/constants/widgets';
 import { useApiQuery } from '@/hooks/useApiQuery';
 import { cn } from '@/lib/utils';
-import { apiClientFetcher, customApi } from '@/services/api/core/api-client';
+import { apiClientFetcher } from '@/services/api/core/api-client';
 import { IWidget } from '@/types/widget.types';
 import {
   ChartBar,
@@ -54,15 +53,11 @@ export const WidgetCard = memo(
     className,
     onDelete,
   }: WidgetCardProps) => {
-    const isCustomUrl = widget.api.useCustomUrl && widget.api.url;
-
     const { data, isLoading, error } = useApiQuery<unknown>({
       queryKey: ['widget', widget.id, widget.api.apiName, widget.api.url],
-      client: isCustomUrl
-        ? customApi
-        : apiClientFetcher(widget.api.provider || ''),
+      client: apiClientFetcher(widget.api.provider || ''),
       url: widget.api.url || '',
-      enabled: Boolean(isCustomUrl),
+      enabled: Boolean(widget.api.useCustomUrl),
     });
 
     return (

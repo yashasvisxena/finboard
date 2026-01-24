@@ -1,6 +1,7 @@
 import { ThemeProvider } from '@/context/ThemeContext';
 import type { Metadata } from 'next';
 import { Geist, Geist_Mono } from 'next/font/google';
+import { Toaster } from 'sonner';
 
 import './globals.css';
 import { QueryProvider } from './query-provider';
@@ -40,6 +41,7 @@ export default function RootLayout({
           >
             <QueryProvider>
               <div className='max-w-7xl mx-auto'>{children}</div>
+              <Toaster richColors />
             </QueryProvider>
           </ThemeProvider>
         </body>
