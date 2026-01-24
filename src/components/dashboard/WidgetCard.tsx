@@ -1,9 +1,23 @@
+'use client';
+
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { sizeClasses } from '@/constants/widgets';
+import { useApiQuery } from '@/hooks/useApiQuery';
 import { cn } from '@/lib/utils';
+import { apiClientFetcher, customApi } from '@/services/api/core/api-client';
 import { IWidget } from '@/types/widget.types';
-import { ChartBar, GripVertical, Sheet, Table } from 'lucide-react';
+import {
+  ChartBar,
+  GripVertical,
+  Pencil,
+  RefreshCcw,
+  Sheet,
+  Table,
+  Trash2,
+} from 'lucide-react';
 import { memo } from 'react';
+
+import { Button } from '../ui/button';
 
 interface WidgetCardProps {
   widget: IWidget;
@@ -13,17 +27,18 @@ interface WidgetCardProps {
   onDragEnd: () => void;
   isDragging: boolean;
   className?: string;
+  onDelete: () => void;
 }
 
 const WidgetIcon = memo(({ icon }: { icon: string }) => {
   switch (icon) {
     case 'table':
-      return <Table className='w-4 h-4' />;
+      return <Table size={20} />;
     case 'chart':
-      return <ChartBar className='w-4 h-4' />;
+      return <ChartBar size={20} />;
     case 'card':
     default:
-      return <Sheet className='w-4 h-4' />;
+      return <Sheet size={20} />;
   }
 });
 WidgetIcon.displayName = 'WidgetIcon';
@@ -37,7 +52,19 @@ export const WidgetCard = memo(
     onDragEnd,
     isDragging,
     className,
+    onDelete,
   }: WidgetCardProps) => {
+    const isCustomUrl = widget.api.useCustomUrl && widget.api.url;
+
+    const { data, isLoading, error } = useApiQuery<unknown>({
+      queryKey: ['widget', widget.id, widget.api.apiName, widget.api.url],
+      client: isCustomUrl
+        ? customApi
+        : apiClientFetcher(widget.api.provider || ''),
+      url: widget.api.url || '',
+      enabled: Boolean(isCustomUrl),
+    });
+
     return (
       <Card
         draggable
@@ -46,7 +73,6 @@ export const WidgetCard = memo(
         onDrop={onDrop}
         onDragEnd={onDragEnd}
         className={cn(
-          sizeClasses[widget.size],
           'cursor-move',
           isDragging
             ? 'opacity-50 scale-95 ring-2 ring-primary'
@@ -54,16 +80,33 @@ export const WidgetCard = memo(
           className
         )}
       >
-        <CardHeader className='flex flex-row items-center gap-2 pb-3'>
-          <GripVertical size={16} />
-          <div className='p-2 rounded-lg'>
-            <WidgetIcon icon={widget.type} />
+        <CardHeader className='flex flex-row justify-between items-center gap-2'>
+          <div className='flex flex-row items-center gap-2'>
+            <GripVertical size={20} />
+            <div className='flex flex-row items-center text-lg gap-1'>
+              <WidgetIcon icon={widget.type} />
+              <CardTitle>{widget.title}</CardTitle>
+            </div>
           </div>
-          <CardTitle className='text-base'>{widget.title}</CardTitle>
+          <div className='flex flex-row items-center gap-2'>
+            <Button variant='outline' size={'icon-sm'}>
+              <RefreshCcw />
+            </Button>
+            <Button variant='outline' size={'icon-sm'}>
+              <Pencil />
+            </Button>
+            <Button variant='destructive' size={'icon-sm'} onClick={onDelete}>
+              <Trash2 />
+            </Button>
+          </div>
         </CardHeader>
 
         <CardContent>
-          <p className='text-sm text-gray-600 mb-4'>{widget.description}</p>
+          {JSON.stringify(widget.api)}
+          <br />
+          {JSON.stringify(widget.mapping)}
+          <br />
+          {JSON.stringify(data)}
         </CardContent>
       </Card>
     );

@@ -1,12 +1,12 @@
 export type TApiProvider = 'alphaVantage' | 'finnhub' | 'indianApi';
-export type TApiParamValue = string | number | boolean | object | string[];
+export type TApiParamValue = string | number | boolean;
 
 export interface IWidgetApiConfig {
-  provider: TApiProvider;
+  provider?: TApiProvider;
   apiName: string;
   refreshInterval: number;
   useCustomUrl?: boolean;
-  customUrl?: string;
+  url?: string;
   params: Record<string, TApiParamValue>;
 }
 

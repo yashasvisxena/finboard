@@ -27,12 +27,20 @@ export interface UseApiQueryArgs<TData = unknown> {
 export function useApiQuery<TData = unknown>(
   args: UseApiQueryArgs<TData>
 ): UseQueryResult<TData> {
-  const { queryKey, client, url, config, enabled = true, signal, refetchInterval } = args;
+  const {
+    queryKey,
+    client,
+    url,
+    config,
+    enabled = true,
+    signal,
+    refetchInterval,
+  } = args;
 
   return useQuery<TData>({
     queryKey,
     enabled,
-    refetchInterval,
+    refetchInterval: refetchInterval || 120 * 1000,
     queryFn: async () => {
       const response = await client.get<TData>(url, {
         ...config,

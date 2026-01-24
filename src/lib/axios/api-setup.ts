@@ -5,31 +5,33 @@ import axios, {
 } from 'axios';
 
 const MAX_REQUESTS_PER_SECOND = 30;
-const INTERVAL = 1000;
 
-let queue: {
-  resolve: (value: InternalAxiosRequestConfig) => void;
-  config: InternalAxiosRequestConfig;
-}[] = [];
+export const createApiClient = (
+  baseURL: string,
+  headers?: Record<string, string>
+): AxiosInstance => {
+  let requestsThisInterval = 0;
+  const queue: {
+    resolve: (value: InternalAxiosRequestConfig) => void;
+    config: InternalAxiosRequestConfig;
+  }[] = [];
 
-let requestsThisInterval = 0;
+  setInterval(() => {
+    requestsThisInterval = 0;
 
-setInterval(() => {
-  requestsThisInterval = 0;
+    while (queue.length > 0 && requestsThisInterval < MAX_REQUESTS_PER_SECOND) {
+      const item = queue.shift();
+      if (!item) break;
 
-  while (queue.length && requestsThisInterval < MAX_REQUESTS_PER_SECOND) {
-    const item = queue.shift();
-    if (!item) break;
+      requestsThisInterval++;
+      item.resolve(item.config);
+    }
+  }, 1000);
 
-    requestsThisInterval++;
-    item.resolve(item.config);
-  }
-}, INTERVAL);
-
-export const createApiClient = (baseURL: string): AxiosInstance => {
   const client = axios.create({
     baseURL,
     timeout: 10000,
+    headers,
   });
 
   client.interceptors.request.use((config: InternalAxiosRequestConfig) => {
@@ -44,7 +46,7 @@ export const createApiClient = (baseURL: string): AxiosInstance => {
   });
 
   client.interceptors.response.use(
-    (response: AxiosResponse) => response,
+    (response: AxiosResponse) => response.data,
     async (error) => {
       const response = error.response;
       const config = error.config as InternalAxiosRequestConfig & {

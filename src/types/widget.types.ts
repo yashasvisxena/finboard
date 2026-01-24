@@ -17,7 +17,6 @@ export interface IWidget {
   type: TWidgetType;
   title: string;
   description?: string;
-  size: TWidgetSize;
 
   api: IWidgetApiConfig;
   mapping: IWidgetDataMapping;

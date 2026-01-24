@@ -1,6 +1,6 @@
 'use client';
 import { cn } from '@/lib/utils';
-import { ChevronDown, ChevronRight } from 'lucide-react';
+import { Check, ChevronDown, ChevronRight } from 'lucide-react';
 import { useState } from 'react';
 
 interface JsonTreeNodeProps {
@@ -8,12 +8,17 @@ interface JsonTreeNodeProps {
   value: unknown;
   path: string[];
   onSelect: (path: string) => void;
+  selectedPaths: string[];
 }
 
 function getNodeType(value: unknown) {
   if (Array.isArray(value)) return 'array';
   if (value !== null && typeof value === 'object') return 'object';
   return 'primitive';
+}
+
+function normalizePath(path: string[]) {
+  return path.map((p, i) => (p === '*' ? '0' : p)).join('.');
 }
 
 function getChildren(value: unknown): [string, unknown][] {
@@ -33,6 +38,7 @@ export function JsonTreeNode({
   value,
   path,
   onSelect,
+  selectedPaths,
 }: JsonTreeNodeProps) {
   const [expanded, setExpanded] = useState(false);
 
@@ -43,16 +49,19 @@ export function JsonTreeNode({
 
   const currentPath = [...path, label];
 
+  const normalizedPath = normalizePath(path);
+  const isSelected = selectedPaths.includes(normalizedPath);
   return (
     <div className='ml-2'>
       <div
         className={cn(
-          'flex items-center gap-1 cursor-pointer text-sm',
-          isLeaf && 'text-blue-600 hover:underline'
+          'flex items-center gap-2 cursor-pointer text-sm rounded px-1',
+          isLeaf && 'hover:bg-primary/10 hover:text-primary',
+          isSelected && 'bg-primary/10 text-primary font-medium'
         )}
         onClick={() => {
           if (isLeaf) {
-            onSelect(currentPath.join('.'));
+            onSelect(normalizePath(currentPath));
           } else {
             setExpanded((prev) => !prev);
           }
@@ -66,8 +75,8 @@ export function JsonTreeNode({
           ))}
 
         <span>{label}</span>
-
         <span className='text-muted-foreground text-xs'>{nodeType}</span>
+        {isSelected && <Check className='h-3 w-3 text-green-600' />}
       </div>
 
       {expanded &&
@@ -78,6 +87,7 @@ export function JsonTreeNode({
             value={childValue}
             path={currentPath}
             onSelect={onSelect}
+            selectedPaths={selectedPaths}
           />
         ))}
     </div>
@@ -87,9 +97,10 @@ export function JsonTreeNode({
 interface JsonTreeProps {
   data: unknown;
   onSelect: (path: string) => void;
+  selectedPaths: string[];
 }
 
-export function JsonTree({ data, onSelect }: JsonTreeProps) {
+export function JsonTree({ data, onSelect, selectedPaths }: JsonTreeProps) {
   if (data === null || typeof data !== 'object') return null;
 
   return (
@@ -101,6 +112,7 @@ export function JsonTree({ data, onSelect }: JsonTreeProps) {
           value={value}
           path={[]}
           onSelect={onSelect}
+          selectedPaths={selectedPaths}
         />
       ))}
     </div>

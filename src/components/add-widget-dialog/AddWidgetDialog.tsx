@@ -41,7 +41,7 @@ export const AddWidgetDialog = memo(({ children }: AddWidgetDialogProps) => {
       <DialogTrigger asChild>
         {children || <Button size='lg'>Add Widget</Button>}
       </DialogTrigger>
-      {open && <DialogContentLazy />}
+      {open && <DialogContentLazy onOpenChange={setOpen} />}
     </Dialog>
   );
 });

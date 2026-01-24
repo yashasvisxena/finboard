@@ -9,7 +9,9 @@ import { AddWidgetDialog } from '../add-widget-dialog/AddWidgetDialog';
 import { WidgetCard } from './WidgetCard';
 
 const DashboardLayout = () => {
-  const { widgets, setWidgets } = useWidgetStore();
+  const widgets = useWidgetStore((state) => state.widgets);
+  const setWidgets = useWidgetStore((state) => state.setWidgets);
+  const deleteWidget = useWidgetStore((state) => state.deleteWidget);
   const [draggedId, setDraggedId] = useState<string | null>(null);
 
   const handleDragStart = useCallback((id: string) => {
@@ -47,6 +49,7 @@ const DashboardLayout = () => {
           onDrop={handleDragEnd}
           onDragEnd={handleDragEnd}
           isDragging={draggedId === widget.id}
+          onDelete={() => deleteWidget(widget.id)}
         />
       ))}
 
