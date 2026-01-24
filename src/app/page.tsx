@@ -1,7 +1,7 @@
 import Navbar from '@/components/common/navbar';
 import dynamic from 'next/dynamic';
 
-const DashboardLayout = dynamic(() => import('@/components/dashboard'), {
+const DashboardLayout = dynamic(() => import('@/components/dashboard/index'), {
   loading: () => (
     <div className='grid gap-4 grid-cols-1 md:grid-cols-2 xl:grid-cols-3 p-4'>
       {[...Array(3)].map((_, i) => (
@@ -12,7 +12,6 @@ const DashboardLayout = dynamic(() => import('@/components/dashboard'), {
       ))}
     </div>
   ),
-  ssr: false,
 });
 
 export default function Home() {

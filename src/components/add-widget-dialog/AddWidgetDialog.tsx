@@ -1,5 +1,11 @@
 import { Button } from '@/components/ui/button';
-import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog';
 import dynamic from 'next/dynamic';
 import { memo, useState } from 'react';
 
@@ -11,6 +17,10 @@ const DialogContentLazy = dynamic(
   {
     loading: () => (
       <DialogContent className='max-w-xl max-h-[70vh] overflow-y-auto'>
+        <DialogTitle className='sr-only'>Loading Add Widget Dialog</DialogTitle>
+        <DialogDescription className='sr-only'>
+          Please wait while the widget configuration options are loading.
+        </DialogDescription>
         {Array.from({ length: 5 }).map((_, i) => (
           <div key={i} className='h-[10vh] animate-pulse bg-muted rounded' />
         ))}

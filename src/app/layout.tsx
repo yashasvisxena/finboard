@@ -3,6 +3,7 @@ import type { Metadata } from 'next';
 import { Geist, Geist_Mono } from 'next/font/google';
 
 import './globals.css';
+import { QueryProvider } from './query-provider';
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -37,7 +38,9 @@ export default function RootLayout({
             enableSystem
             disableTransitionOnChange
           >
-            <div className='max-w-7xl mx-auto'>{children}</div>
+            <QueryProvider>
+              <div className='max-w-7xl mx-auto'>{children}</div>
+            </QueryProvider>
           </ThemeProvider>
         </body>
       </html>
