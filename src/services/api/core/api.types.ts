@@ -16,12 +16,18 @@ export interface IApiConfig {
   endpoint: string;
   params: IApiParams[];
   isWS?: boolean;
-  sampleResponse?: Record<string, unknown>;
+  sampleResponse?:
+    | Record<string, unknown>
+    | string[]
+    | number[]
+    | string
+    | Record<string, unknown>[];
 }
 
 export interface IApiParams {
   name: string;
-  type: 'string' | 'number' | 'boolean' | 'object' | 'array';
+  type: 'string' | 'number' | 'boolean' | 'object' | 'array' | 'date';
   required?: boolean;
   description?: string;
+  default?: string;
 }
