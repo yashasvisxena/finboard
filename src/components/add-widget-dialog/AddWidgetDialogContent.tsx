@@ -8,9 +8,9 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 
-import { WidgetApiSection } from './widgetApiSection';
-import { WidgetBasicSection } from './widgetBasicSection';
-import { WidgetRefreshSection } from './widgetRefreshSection';
+import { WidgetApiSection } from './sections/widgetApiSection';
+import { WidgetBasicSection } from './sections/widgetBasicSection';
+import { WidgetRefreshSection } from './sections/widgetRefreshSection';
 
 export const AddWidgetDialogContent = () => {
   return (

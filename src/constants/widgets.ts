@@ -1,7 +1,7 @@
-import { WidgetSize } from '@/types/widget.types';
+import { TWidgetSize } from '@/types/widget.types';
 import { ChartBar, Sheet, Table } from 'lucide-react';
 
-export const sizeClasses: Record<WidgetSize, string> = {
+export const sizeClasses: Record<TWidgetSize, string> = {
   small: 'col-span-1 row-span-1',
   medium: 'col-span-1 md:col-span-1 row-span-1',
   large: 'col-span-1 md:col-span-2 row-span-2',

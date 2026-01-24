@@ -1,9 +1,8 @@
-import {
-  WidgetApiConfig,
-  WidgetDisplayConfig,
-} from '@/services/api/core/api.types';
+import { IWidgetApiConfig } from '@/services/api/core/api.types';
 
-export type WidgetSize =
+import { IWidgetDataMapping } from './mapping.types';
+
+export type TWidgetSize =
   | 'small'
   | 'medium'
   | 'large'
@@ -11,37 +10,15 @@ export type WidgetSize =
   | 'tall'
   | 'full';
 
-export type IconType = 'table' | 'chart' | 'card';
+export type TWidgetType = 'table' | 'chart' | 'card';
 
-export interface BaseWidget {
+export interface IWidget {
   id: string;
+  type: TWidgetType;
   title: string;
   description?: string;
-  icon: IconType;
-  size: WidgetSize;
+  size: TWidgetSize;
 
-  api: WidgetApiConfig;
-  display?: WidgetDisplayConfig;
-
-  data?: unknown;
-  lastUpdated?: number;
+  api: IWidgetApiConfig;
+  mapping: IWidgetDataMapping;
 }
-
-export interface TableWidget extends BaseWidget {
-  icon: 'table';
-  pagination?: {
-    limit: number;
-    offset: number;
-    total: number;
-  };
-}
-
-export interface ChartWidget extends BaseWidget {
-  icon: 'chart';
-}
-
-export interface CardWidget extends BaseWidget {
-  icon: 'card';
-}
-
-export type Widget = TableWidget | ChartWidget | CardWidget;

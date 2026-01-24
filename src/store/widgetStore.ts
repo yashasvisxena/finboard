@@ -1,19 +1,19 @@
 'use client';
 
-import { Widget } from '@/types/widget.types';
+import { IWidget } from '@/types/widget.types';
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
 interface WidgetStore {
-  widgets: Widget[];
+  widgets: IWidget[];
   uiState: {
     id: string | null;
     isEditMode: boolean;
   };
 
-  addWidget: (widget: Widget) => void;
-  setWidgets: (widgets: Widget[]) => void;
-  updateWidget: (id: string, widget: Partial<Widget>) => void;
+  addWidget: (widget: IWidget) => void;
+  setWidgets: (widgets: IWidget[]) => void;
+  updateWidget: (id: string, widget: Partial<IWidget>) => void;
   deleteWidget: (id: string) => void;
   setEditMode: (id: string | null) => void;
 }
@@ -24,7 +24,7 @@ export const useWidgetStore = create<WidgetStore>()(
       widgets: [],
       uiState: { id: null, isEditMode: false },
 
-      setWidgets: (widgets: Widget[]) => set({ widgets }),
+      setWidgets: (widgets) => set({ widgets }),
 
       addWidget: (widget) =>
         set((s) => ({
@@ -55,7 +55,7 @@ export const useWidgetStore = create<WidgetStore>()(
       name: 'widget-storage',
       partialize: (state) => ({
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        widgets: state.widgets.map(({ data: _data, ...rest }) => rest),
+        widgets: state.widgets.map(({ ...rest }) => rest),
       }),
     }
   )

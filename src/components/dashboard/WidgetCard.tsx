@@ -1,12 +1,12 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { sizeClasses } from '@/constants/widgets';
 import { cn } from '@/lib/utils';
-import { Widget, WidgetSize } from '@/types/widget.types';
+import { IWidget } from '@/types/widget.types';
 import { ChartBar, GripVertical, Sheet, Table } from 'lucide-react';
 import { memo } from 'react';
 
 interface WidgetCardProps {
-  widget: Widget;
+  widget: IWidget;
   onDragStart: () => void;
   onDragOver: (e: React.DragEvent) => void;
   onDrop: () => void;
@@ -46,7 +46,7 @@ export const WidgetCard = memo(
         onDrop={onDrop}
         onDragEnd={onDragEnd}
         className={cn(
-          sizeClasses[widget.size as WidgetSize],
+          sizeClasses[widget.size],
           'cursor-move',
           isDragging
             ? 'opacity-50 scale-95 ring-2 ring-primary'
@@ -57,7 +57,7 @@ export const WidgetCard = memo(
         <CardHeader className='flex flex-row items-center gap-2 pb-3'>
           <GripVertical size={16} />
           <div className='p-2 rounded-lg'>
-            <WidgetIcon icon={widget.icon} />
+            <WidgetIcon icon={widget.type} />
           </div>
           <CardTitle className='text-base'>{widget.title}</CardTitle>
         </CardHeader>
