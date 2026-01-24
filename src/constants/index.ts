@@ -5,3 +5,8 @@ export const API_KEYS = {
   FINNHUB: process.env.NEXT_PUBLIC_FINNHUB_API_KEY,
   INDIAN_API: process.env.NEXT_PUBLIC_INDIAN_API_KEY,
 };
+
+export const API_BASE_URLS = {
+  FINNHUB: 'https://finnhub.io/api/v1',
+  INDIAN_API: 'https://stock.indianapi.in',
+};
