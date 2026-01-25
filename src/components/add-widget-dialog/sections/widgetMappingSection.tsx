@@ -9,6 +9,7 @@ import {
 } from '@/components/ui/form';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 import { apiKeyFetchers } from '@/constants';
+import { useMappingFields } from '@/hooks/useMappingFields';
 import { useTestApi } from '@/hooks/useTestApi';
 import { transformParams } from '@/lib/utils';
 import { BarChart3, LayoutGrid, Loader2, Table } from 'lucide-react';
@@ -19,118 +20,23 @@ import {
   ResponseFieldSelect,
   SelectedFields,
 } from '../components/ResponseFieldSelect';
+import { AxisMode, AxisModeSelector } from './AxisModeSelector';
 
 export const WidgetMappingSection = () => {
-  const { watch, setValue, getValues, control } = useFormContext();
+  const { watch, control } = useFormContext();
   const provider = watch('api.provider');
-  const type = watch('type');
   const api = watch('api');
-  const mapping = watch('mapping');
 
-  const [axisMode, setAxisMode] = useState<'xAxis' | 'yAxis'>('xAxis');
+  const [axisMode, setAxisMode] = useState<AxisMode>('xAxis');
 
-  const getSelectedFields = () => {
-    if (mapping.type === 'card') {
-      return mapping.fields || [];
-    }
-
-    if (mapping.type === 'table') {
-      return mapping.columns || [];
-    }
-
-    if (mapping.type === 'chart') {
-      const xAxisFields = (mapping.xAxis?.keys || []).map((k: string) => ({
-        key: k,
-        label: 'X-Axis',
-      }));
-      const yAxisField = mapping.yAxis?.key
-        ? [{ key: mapping.yAxis.key, label: 'Y-Axis' }]
-        : [];
-      return [...xAxisFields, ...yAxisField];
-    }
-
-    return [];
-  };
-
-  const getSelectedPaths = () => {
-    return getSelectedFields().map((f: { key: string }) => f.key);
-  };
-
-  const addField = (path: string) => {
-    const mapping = getValues('mapping');
-
-    switch (type) {
-      case 'card':
-        setValue('mapping', {
-          type: 'card',
-          fields: [...(mapping.fields ?? []), { key: path }],
-        });
-        break;
-
-      case 'table':
-        setValue('mapping', {
-          type: 'table',
-          columns: [...(mapping.columns ?? []), { key: path }],
-        });
-        break;
-
-      case 'chart':
-        if (axisMode === 'yAxis') {
-          setValue('mapping', {
-            type: 'chart',
-            xAxis: mapping.xAxis ?? { keys: [] },
-            yAxis: { key: path },
-          });
-        } else {
-          setValue('mapping', {
-            type: 'chart',
-            xAxis: {
-              keys: [...(mapping.xAxis?.keys ?? []), path],
-            },
-            yAxis: mapping.yAxis ?? { key: '' },
-          });
-        }
-        break;
-    }
-  };
-
-  const removeField = (key: string) => {
-    const mapping = getValues('mapping');
-
-    switch (type) {
-      case 'card':
-        setValue('mapping', {
-          type: 'card',
-          fields: (mapping.fields ?? []).filter(
-            (f: { key: string }) => f.key !== key
-          ),
-        });
-        break;
-
-      case 'table':
-        setValue('mapping', {
-          type: 'table',
-          columns: (mapping.columns ?? []).filter(
-            (c: { key: string }) => c.key !== key
-          ),
-        });
-        break;
-
-      case 'chart':
-        setValue('mapping', {
-          type: 'chart',
-          xAxis: {
-            keys: (mapping.xAxis?.keys ?? []).filter((k: string) => k !== key),
-          },
-          yAxis:
-            mapping.yAxis?.key === key
-              ? { key: '' }
-              : (mapping.yAxis ?? { key: '' }),
-          interval: mapping.interval,
-        });
-        break;
-    }
-  };
+  const {
+    type,
+    getSelectedFields,
+    getSelectedPaths,
+    addField,
+    removeField,
+    handleTypeChange,
+  } = useMappingFields(axisMode);
 
   const { data, loading, error, testApi } = useTestApi();
 
@@ -147,28 +53,6 @@ export const WidgetMappingSection = () => {
       } else {
         testApi(api.url, provider, apiParams);
       }
-    }
-  };
-
-  const handleTypeChange = (newType: string) => {
-    if (!newType) return;
-
-    setValue('type', newType);
-
-    switch (newType) {
-      case 'card':
-        setValue('mapping', { type: 'card', fields: [] });
-        break;
-      case 'table':
-        setValue('mapping', { type: 'table', columns: [] });
-        break;
-      case 'chart':
-        setValue('mapping', {
-          type: 'chart',
-          xAxis: { keys: [] },
-          yAxis: { key: '' },
-        });
-        break;
     }
   };
 
@@ -226,29 +110,7 @@ export const WidgetMappingSection = () => {
       </div>
 
       {type === 'chart' && (
-        <div className='space-y-2'>
-          <FormLabel>Select Axis</FormLabel>
-          <ToggleGroup
-            type='single'
-            value={axisMode}
-            onValueChange={(val) =>
-              val && setAxisMode(val as 'xAxis' | 'yAxis')
-            }
-            className='justify-start'
-          >
-            <ToggleGroupItem value='xAxis' aria-label='X-Axis'>
-              X-Axis (Labels)
-            </ToggleGroupItem>
-            <ToggleGroupItem value='yAxis' aria-label='Y-Axis'>
-              Y-Axis (Values)
-            </ToggleGroupItem>
-          </ToggleGroup>
-          <p className='text-xs text-muted-foreground'>
-            {axisMode === 'xAxis'
-              ? 'Select fields for X-axis labels (e.g., dates, categories)'
-              : 'Select a single field for Y-axis values (e.g., price, count)'}
-          </p>
-        </div>
+        <AxisModeSelector value={axisMode} onChange={setAxisMode} />
       )}
 
       {data !== null && data !== undefined && (
