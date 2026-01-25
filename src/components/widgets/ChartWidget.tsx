@@ -46,7 +46,7 @@ export const ChartWidget = memo(({ data, mapping }: ChartWidgetProps) => {
   }
 
   const strokeColor = isDark ? '#22c55e' : '#16a34a';
-  const gridColor = isDark ? '#374151' : '#e5e7eb'; 
+  const gridColor = isDark ? '#374151' : '#e5e7eb';
 
   return (
     <div className='w-full h-[200px] sm:h-[250px]'>

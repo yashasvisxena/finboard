@@ -37,10 +37,7 @@ export function LoadingState({
         {Array.from({ length: skeletonRows }).map((_, i) => (
           <Skeleton
             key={i}
-            className={cn(
-              'h-4 w-full',
-              i === skeletonRows - 1 && 'w-3/4'
-            )}
+            className={cn('h-4 w-full', i === skeletonRows - 1 && 'w-3/4')}
           />
         ))}
       </div>

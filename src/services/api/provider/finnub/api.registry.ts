@@ -1,6 +1,4 @@
-import { IApiConfig } from '../../core/api.types';
-
-export const finnhubApiRegistry: IApiConfig[] = [
+export const finnhubApiRegistry: any[] = [
   {
     provider: 'finnhub',
     name: 'Search Stock Symbols',

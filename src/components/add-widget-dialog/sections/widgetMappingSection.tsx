@@ -247,23 +247,25 @@ export const WidgetMappingSection = () => {
         </div>
       )}
 
-      <FormField
-        control={control}
-        name='mapping'
-        render={() => (
-          <FormItem>
-            <FormLabel>Select Fields to Display</FormLabel>
-            {data !== null && data !== undefined && (
-              <ResponseFieldSelect
-                data={data}
-                onSelect={addField}
-                selectedPaths={getSelectedPaths()}
-              />
-            )}
-            <FormMessage />
-          </FormItem>
-        )}
-      />
+      {data !== null && data !== undefined && (
+        <FormField
+          control={control}
+          name='mapping'
+          render={() => (
+            <FormItem>
+              <FormLabel>Select Fields to Display</FormLabel>
+              {data !== null && data !== undefined && (
+                <ResponseFieldSelect
+                  data={data}
+                  onSelect={addField}
+                  selectedPaths={getSelectedPaths()}
+                />
+              )}
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+      )}
 
       <SelectedFields fields={getSelectedFields()} onRemove={removeField} />
     </div>
