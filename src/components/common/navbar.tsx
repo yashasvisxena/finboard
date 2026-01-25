@@ -19,17 +19,19 @@ const Navbar = () => {
   );
 
   return (
-    <div className='flex justify-between items-center p-4'>
-      <div className='flex flex-col'>
-        <h1 className='text-2xl font-bold'>FinBoard</h1>
-        <p className='text-sm text-muted-foreground'>{statusText}</p>
+    <header className='flex flex-col gap-3 p-4 sm:flex-row sm:justify-between sm:items-center'>
+      <div className='flex flex-col min-w-0'>
+        <h1 className='text-xl font-bold sm:text-2xl'>FinBoard</h1>
+        <p className='text-xs text-muted-foreground truncate sm:text-sm'>
+          {statusText}
+        </p>
       </div>
-      <div className='flex gap-2 items-center justify-end'>
+      <nav className='flex gap-2 items-center flex-wrap sm:flex-nowrap'>
         <ConfigBackupDialog />
         <AddWidgetDialog />
         <ThemeToggle />
-      </div>
-    </div>
+      </nav>
+    </header>
   );
 };
 

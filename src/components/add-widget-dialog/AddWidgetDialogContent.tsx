@@ -127,7 +127,7 @@ export const AddWidgetDialogContent = ({
   };
 
   return (
-    <DialogContent className='max-w-xl '>
+    <DialogContent className='max-w-xl w-[calc(100%-2rem)] sm:w-full'>
       <DialogHeader>
         <DialogTitle>{isEditMode ? 'Edit Widget' : 'Add Widget'}</DialogTitle>
         <DialogDescription>
