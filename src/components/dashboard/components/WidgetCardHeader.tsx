@@ -71,11 +71,11 @@ export const WidgetCardHeader = memo(
           </div>
         </div>
 
-        {widget.description && (
-          <span className='text-sm text-muted-foreground truncate'>
-            {widget.description}
-          </span>
-        )}
+        <span className='text-sm text-muted-foreground truncate'>
+          {widget.description && `${widget.description}`}
+          {widget.description && <br />}
+          Updates every {widget.api.refreshInterval} seconds
+        </span>
       </CardHeader>
     );
   }

@@ -48,6 +48,17 @@ export const ChartWidget = memo(({ data, mapping }: ChartWidgetProps) => {
   const strokeColor = isDark ? '#22c55e' : '#16a34a';
   const gridColor = isDark ? '#374151' : '#e5e7eb';
 
+  // Calculate min and max for Y-axis domain
+  const values = chartData.map((d) => d.value);
+  const minValue = Math.min(...values);
+  const maxValue = Math.max(...values);
+  // Add 5% padding to min/max for better visualization
+  const padding = (maxValue - minValue) * 0.05 || 1;
+  const yDomain: [number, number] = [
+    Math.floor(minValue - padding),
+    Math.ceil(maxValue + padding),
+  ];
+
   return (
     <div className='w-full h-[200px] sm:h-[250px]'>
       <ResponsiveContainer width='100%' height='100%'>
@@ -64,6 +75,7 @@ export const ChartWidget = memo(({ data, mapping }: ChartWidgetProps) => {
             axisLine={false}
           />
           <YAxis
+            domain={yDomain}
             tick={{ fontSize: 11 }}
             stroke={isDark ? '#9ca3af' : '#6b7280'}
             tickLine={false}

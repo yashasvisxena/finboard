@@ -25,17 +25,17 @@ A modern, customizable financial dashboard built with Next.js that allows users 
 
 ## 🛠️ Tech Stack
 
-| Category             | Technologies                      |
-| -------------------- | --------------------------------- |
-| **Framework**        | Next.js 16, React 19              |
-| **Language**         | TypeScript                        |
-| **Styling**          | Tailwind CSS 4                    |
-| **State Management** | Zustand                           |
-| **Data Fetching**    | TanStack React Query, Axios       |
-| **Charts**           | Recharts                          |
-| **UI Components**    | Shadcn/ui                         |
-| **Forms**            | React Hook Form, Zod              |
-| **Utilities**        | date-fns, clsx, tailwind-merge    |
+| Category             | Technologies                   |
+| -------------------- | ------------------------------ |
+| **Framework**        | Next.js 16, React 19           |
+| **Language**         | TypeScript                     |
+| **Styling**          | Tailwind CSS 4                 |
+| **State Management** | Zustand                        |
+| **Data Fetching**    | TanStack React Query, Axios    |
+| **Charts**           | Recharts                       |
+| **UI Components**    | Shadcn/ui                      |
+| **Forms**            | React Hook Form, Zod           |
+| **Utilities**        | date-fns, clsx, tailwind-merge |
 
 ## 🚀 Getting Started
 

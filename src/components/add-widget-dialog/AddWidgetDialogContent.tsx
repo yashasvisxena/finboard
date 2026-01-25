@@ -118,7 +118,7 @@ export const AddWidgetDialogContent = ({
   };
 
   return (
-    <DialogContent className='w-full max-w-2xl overflow-y-auto max-h-[90vh]'>
+    <DialogContent className='w-full max-w-2xl'>
       <DialogHeader>
         <DialogTitle>{isEditMode ? 'Edit Widget' : 'Add Widget'}</DialogTitle>
         <DialogDescription>
@@ -133,7 +133,7 @@ export const AddWidgetDialogContent = ({
           onSubmit={form.handleSubmit(onSubmit, onError)}
           className='space-y-2'
         >
-          <div className='space-y-3 max-h-[70vh] overflow-y-auto py-2 px-1'>
+          <div className='space-y-3 max-h-[75vh] overflow-y-auto py-2 px-1'>
             <WidgetBasicSection />
             <WidgetApiSection />
             <WidgetParamsField />

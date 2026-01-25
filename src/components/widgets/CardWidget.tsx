@@ -4,8 +4,7 @@ import { TruncatedText } from '@/components/ui/TruncatedText';
 import { extractCardData, formatValue } from '@/lib/data-utils';
 import { TResolvedValue } from '@/lib/dot-notation-resolver';
 import { ICardMapping } from '@/types/mapping.types';
-import { useVirtualizer } from '@tanstack/react-virtual';
-import { memo, useMemo, useRef } from 'react';
+import { memo, useMemo } from 'react';
 
 interface CardWidgetProps {
   data: unknown;
@@ -30,11 +29,11 @@ const CardFieldItem = memo(({ field }: { field: FieldData }) => {
     <div className='space-y-1'>
       <TruncatedText
         text={label}
-        className='text-xs md:text-sm text-muted-foreground truncate capitalize'
+        className='text-sm md:text-base text-muted-foreground truncate capitalize'
       />
       <TruncatedText
         text={formattedValue}
-        className='text-base md:text-lg font-medium truncate'
+        className='text-lg md:text-xl font-medium truncate'
       />
     </div>
   );
@@ -42,7 +41,7 @@ const CardFieldItem = memo(({ field }: { field: FieldData }) => {
 CardFieldItem.displayName = 'CardFieldItem';
 
 const SimpleCardGrid = memo(({ fields }: { fields: FieldData[] }) => (
-  <div className='grid grid-cols-1 md:grid-cols-2 gap-3 max-h-[200px] overflow-y-auto'>
+  <div className='grid grid-cols-1 gap-3 max-h-[200px] overflow-y-auto'>
     {fields.map((field) => (
       <CardFieldItem key={field.key} field={field} />
     ))}
