@@ -1,5 +1,6 @@
 'use client';
 
+import { TruncatedText } from '@/components/ui/TruncatedText';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import {
@@ -21,6 +22,7 @@ import {
   extractTableData,
   filterBySearch,
   formatValue,
+  getFieldName,
   paginateData,
 } from '@/lib/data-utils';
 import { TResolvedValue } from '@/lib/dot-notation-resolver';
@@ -33,42 +35,39 @@ interface TableWidgetProps {
   mapping: ITableMapping;
   page?: number;
   pageSize?: number;
-  totalItems?: number;
 }
 
 const PAGE_SIZES = [5, 10, 20, 50];
 
 export const TableWidget = memo(
-  ({ data, mapping, page, pageSize, totalItems }: TableWidgetProps) => {
+  ({ data, mapping, page = 1, pageSize = 10 }: TableWidgetProps) => {
     const [searchTerm, setSearchTerm] = useState('');
-    const [localPage, setLocalPage] = useState(page || 1);
-    const [localPageSize, setLocalPageSize] = useState(pageSize || 10);
+    const [currentPage, setCurrentPage] = useState(page);
+    const [currentPageSize, setCurrentPageSize] = useState(pageSize);
 
-    const tableData = useMemo(() => {
-      return extractTableData(data, mapping.columns);
-    }, [data, mapping.columns]);
+    const tableData = useMemo(
+      () => extractTableData(data, mapping.columns),
+      [data, mapping.columns]
+    );
 
-    const filteredData = useMemo(() => {
-      return filterBySearch(tableData, searchTerm);
-    }, [tableData, searchTerm]);
+    const filteredData = useMemo(
+      () => filterBySearch(tableData, searchTerm),
+      [tableData, searchTerm]
+    );
 
-    const { items, totalPages } = useMemo(() => {
-      return paginateData(filteredData, localPage, localPageSize);
-    }, [filteredData, localPage, localPageSize]);
+    const { items, totalPages, totalItems } = useMemo(
+      () => paginateData(filteredData, currentPage, currentPageSize),
+      [filteredData, currentPage, currentPageSize]
+    );
 
-    const handleSearchChange = (value: string) => {
+    const onSearch = (value: string) => {
       setSearchTerm(value);
-      setLocalPage(1);
+      setCurrentPage(1);
     };
 
-    const handlePageChange = (newPage: number) => {
-      setLocalPage(newPage);
-    };
-
-    const handlePageSizeChange = (value: string) => {
-      const newSize = Number(value);
-      setLocalPageSize(newSize);
-      setLocalPage(1);
+    const onPageSizeChange = (value: string) => {
+      setCurrentPageSize(Number(value));
+      setCurrentPage(1);
     };
 
     if (mapping.columns.length === 0) {
@@ -81,21 +80,22 @@ export const TableWidget = memo(
 
     return (
       <div className='space-y-3'>
+        {/* Search and Page Size */}
         <div className='flex flex-col sm:flex-row gap-2 items-start sm:items-center justify-between'>
           <div className='relative flex-1 max-w-xs'>
             <Search className='absolute left-2.5 top-1/2 -translate-y-1/2 size-4 text-muted-foreground' />
             <Input
               placeholder='Search...'
               value={searchTerm}
-              onChange={(e) => handleSearchChange(e.target.value)}
+              onChange={(e) => onSearch(e.target.value)}
               className='pl-8 h-8 text-sm'
             />
           </div>
           <div className='flex items-center gap-2 text-sm text-muted-foreground'>
             <span>Show</span>
             <Select
-              value={String(pageSize)}
-              onValueChange={handlePageSizeChange}
+              value={String(currentPageSize)}
+              onValueChange={onPageSizeChange}
             >
               <SelectTrigger className='h-8 w-16'>
                 <SelectValue />
@@ -111,13 +111,14 @@ export const TableWidget = memo(
           </div>
         </div>
 
+        {/* Table */}
         <div className='border rounded-lg overflow-hidden'>
           <Table>
             <TableHeader>
               <TableRow>
                 {mapping.columns.map((col) => (
                   <TableHead key={col.key} className='text-xs font-semibold'>
-                    {col.label || col.key}
+                    {col.label ?? getFieldName(col.key)}
                   </TableHead>
                 ))}
               </TableRow>
@@ -136,11 +137,17 @@ export const TableWidget = memo(
                 items.map((row, idx) => (
                   <TableRow key={idx}>
                     {mapping.columns.map((col) => (
-                      <TableCell key={col.key} className='text-sm'>
-                        {formatValue(
-                          row[col.key] as TResolvedValue,
-                          col.format
-                        )}
+                      <TableCell
+                        key={col.key}
+                        className='text-sm max-w-[200px]'
+                      >
+                        <TruncatedText
+                          text={formatValue(
+                            row[col.key] as TResolvedValue,
+                            col.format
+                          )}
+                          className='truncate block'
+                        />
                       </TableCell>
                     ))}
                   </TableRow>
@@ -150,32 +157,33 @@ export const TableWidget = memo(
           </Table>
         </div>
 
+        {/* Pagination */}
         {totalPages > 1 && (
           <div className='flex items-center justify-between text-sm'>
             <span className='text-muted-foreground'>
-              Showing {(localPage - 1) * localPageSize + 1} to{' '}
-              {Math.min(localPage * localPageSize, totalItems || 0)} of{' '}
-              {totalItems || 0}
+              Showing {(currentPage - 1) * currentPageSize + 1} to{' '}
+              {Math.min(currentPage * currentPageSize, totalItems)} of{' '}
+              {totalItems}
             </span>
             <div className='flex items-center gap-1'>
               <Button
                 variant='outline'
                 size='icon-sm'
-                onClick={() => handlePageChange(Math.max(1, localPage - 1))}
-                disabled={localPage === 1}
+                onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                disabled={currentPage === 1}
               >
                 <ChevronLeft className='size-4' />
               </Button>
               <span className='px-2 min-w-[80px] text-center'>
-                Page {localPage} of {totalPages}
+                Page {currentPage} of {totalPages}
               </span>
               <Button
                 variant='outline'
                 size='icon-sm'
                 onClick={() =>
-                  handlePageChange(Math.min(totalPages, localPage + 1))
+                  setCurrentPage((p) => Math.min(totalPages, p + 1))
                 }
-                disabled={localPage === totalPages}
+                disabled={currentPage === totalPages}
               >
                 <ChevronRight className='size-4' />
               </Button>

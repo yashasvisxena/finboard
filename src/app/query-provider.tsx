@@ -17,6 +17,8 @@ export function QueryProvider({ children }: QueryProviderProps) {
             staleTime: 1000 * 60 * 5,
             gcTime: 1000 * 60 * 15,
             refetchOnWindowFocus: false,
+            refetchOnMount: false,
+            refetchOnReconnect: false,
             retry: 2,
           },
         },

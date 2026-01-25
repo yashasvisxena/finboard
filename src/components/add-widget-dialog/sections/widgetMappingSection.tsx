@@ -142,6 +142,8 @@ export const WidgetMappingSection = () => {
           apiKeyFetchers[provider as keyof typeof apiKeyFetchers]();
         const params = { ...apiKey, ...api.params };
         testApi(api.url, provider, params);
+      } else {
+        testApi(api.url, provider, api.params || {});
       }
     }
   };

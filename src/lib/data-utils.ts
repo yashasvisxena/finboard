@@ -3,6 +3,33 @@ import { TFieldFormat } from '@/types/add-widget-schema';
 import { TResolvedValue, resolvePath } from './dot-notation-resolver';
 
 /**
+ * Get the field name from a dot-notation path
+ * e.g., 'data.stock.price' → 'price'
+ */
+export function getFieldName(path: string): string {
+  if (!path) return '';
+  const parts = path.split('.');
+  return humanizeKey(parts[parts.length - 1]);
+}
+
+/**
+ * Convert snake_case or camelCase to human-readable format
+ * e.g., 'market_capital' → 'Market Capital'
+ * e.g., 'marketCapital' → 'Market Capital'
+ */
+export function humanizeKey(key: string) {
+  return (
+    key
+      // marketCapital → market Capital
+      .replace(/([a-z])([A-Z])/g, '$1 $2')
+      // snake_case → snake case
+      .replace(/_/g, ' ')
+      // Capitalize each word
+      .replace(/\b\w/g, (c) => c.toUpperCase())
+  );
+}
+
+/**
  * Extract a single value from data using a dot-notation path
  */
 export function extractValue(data: unknown, path: string): TResolvedValue {
@@ -81,7 +108,7 @@ export function extractCardData(
 }[] {
   return fields.map((field) => ({
     key: field.key,
-    label: field.label || field.key,
+    label: field.label ?? getFieldName(field.key),
     value: resolvePath(data, field.key),
     format: field.format,
   }));

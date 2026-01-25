@@ -18,8 +18,6 @@ export interface UseApiQueryArgs<TData = unknown> {
   config?: Omit<AxiosRequestConfig, 'url' | 'method'>;
   /** Whether the query should be enabled. */
   enabled?: boolean;
-  /** Abort signal for the request. */
-  signal?: AbortSignal;
   /** Optional refetch interval in milliseconds for auto-refresh. */
   refetchInterval?: number | false;
 }
@@ -33,7 +31,6 @@ export function useApiQuery<TData = unknown>(
     url,
     config,
     enabled = true,
-    signal,
     refetchInterval,
   } = args;
 
@@ -41,13 +38,13 @@ export function useApiQuery<TData = unknown>(
     queryKey,
     enabled,
     refetchInterval: refetchInterval || 120 * 1000,
-    queryFn: async () => {
-      const response = await client.get<TData>(url, {
+    queryFn: async ({ signal }) => {
+      const data = await client.get<TData>(url, {
         ...config,
         signal,
       });
 
-      return response.data;
+      return data as TData;
     },
   });
 }

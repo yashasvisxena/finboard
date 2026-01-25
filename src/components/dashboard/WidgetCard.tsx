@@ -8,15 +8,10 @@ import {
   EmptyMedia,
   EmptyTitle,
 } from '@/components/ui/empty';
-import { CardWidget, ChartWidget, TableWidget } from '@/components/widgets';
+import { WidgetRenderer } from '@/components/widgets';
 import { useApiQuery } from '@/hooks/useApiQuery';
 import { cn } from '@/lib/utils';
 import { apiClientFetcher } from '@/services/api/core/api-client';
-import {
-  ICardMapping,
-  IChartMapping,
-  ITableMapping,
-} from '@/types/mapping.types';
 import { IWidget } from '@/types/widget.types';
 import {
   ChartBar,
@@ -80,8 +75,8 @@ export const WidgetCard = memo(
     const { data, isLoading, isError, error, refetch, isFetching } =
       useApiQuery<unknown>({
         queryKey: ['widget', widget.id, widget.api.provider, widget.api.url],
-        client: apiClientFetcher(widget.api.provider || ''),
-        url: widget.api.url || '',
+        client: apiClientFetcher(widget.api.provider),
+        url: widget.api.url,
         enabled: Boolean(widget.api.url),
       });
 
@@ -126,39 +121,13 @@ export const WidgetCard = memo(
         );
       }
 
-      switch (widget.type) {
-        case 'table':
-          return (
-            <TableWidget
-              data={data}
-              mapping={widget.mapping as ITableMapping}
-              page={1}
-              pageSize={10}
-              totalItems={
-                (data as any)?.count ||
-                (data as any)?.total ||
-                (Array.isArray(data) ? data.length : 0)
-              }
-            />
-          );
-        case 'chart':
-          return (
-            <ChartWidget
-              data={data}
-              mapping={widget.mapping as IChartMapping}
-            />
-          );
-        case 'card':
-          return (
-            <CardWidget data={data} mapping={widget.mapping as ICardMapping} />
-          );
-        default:
-          return (
-            <div className='text-sm text-muted-foreground'>
-              Unknown widget type: {widget.type}
-            </div>
-          );
-      }
+      return (
+        <WidgetRenderer
+          type={widget.type}
+          data={data}
+          mapping={widget.mapping}
+        />
+      );
     };
 
     return (
@@ -176,52 +145,61 @@ export const WidgetCard = memo(
           className
         )}
       >
-        <CardHeader className='flex flex-row justify-between items-start gap-2 p-3 sm:p-4 sm:items-center'>
-          <div className='flex flex-row items-center gap-2 min-w-0'>
-            <GripVertical className='size-4 sm:size-5 shrink-0 text-muted-foreground touch-none' />
-            <div className='flex flex-row items-center gap-1.5 min-w-0'>
-              <WidgetIcon icon={widget.type} />
-              <CardTitle className='text-sm sm:text-base truncate'>
-                {widget.title}
-              </CardTitle>
+        <CardHeader className='flex flex-col justify-center items-start gap-2'>
+          <div className='flex justify-between items-center gap-2 w-full'>
+            <div className='flex flex-row items-center gap-2 min-w-0'>
+              <GripVertical className='size-4 sm:size-5 shrink-0 text-muted-foreground touch-none' />
+              <div className='flex flex-row items-center gap-2 min-w-0'>
+                <WidgetIcon icon={widget.type} />
+                <CardTitle className='text-sm sm:text-base text-wrap'>
+                  {widget.title}
+                </CardTitle>
+              </div>
             </div>
-          </div>
 
-          <div className='flex flex-row items-center gap-1.5 sm:gap-2 shrink-0'>
-            <Button
-              variant='outline'
-              size='icon-sm'
-              onClick={() => refetch()}
-              disabled={isLoading || isFetching}
-              className='size-7 sm:size-8'
-            >
-              <RefreshCcw
-                className={cn('size-3 sm:size-4', isFetching && 'animate-spin')}
-              />
-            </Button>
-            <AddWidgetDialog editWidget={widget}>
+            <div className='flex flex-row items-center gap-1.5 sm:gap-2 shrink-0'>
               <Button
                 variant='outline'
                 size='icon-sm'
+                onClick={() => refetch()}
+                disabled={isLoading || isFetching}
                 className='size-7 sm:size-8'
               >
-                <Pencil className='size-3 sm:size-4' />
+                <RefreshCcw
+                  className={cn(
+                    'size-3 sm:size-4',
+                    isFetching && 'animate-spin'
+                  )}
+                />
               </Button>
-            </AddWidgetDialog>
-            <Button
-              variant='destructive'
-              size='icon-sm'
-              onClick={onDelete}
-              className='size-7 sm:size-8'
-            >
-              <Trash2 className='size-3 sm:size-4' />
-            </Button>
+              <AddWidgetDialog editWidget={widget}>
+                <Button
+                  variant='outline'
+                  size='icon-sm'
+                  className='size-7 sm:size-8'
+                >
+                  <Pencil className='size-3 sm:size-4' />
+                </Button>
+              </AddWidgetDialog>
+              <Button
+                variant='destructive'
+                size='icon-sm'
+                onClick={onDelete}
+                className='size-7 sm:size-8'
+              >
+                <Trash2 className='size-3 sm:size-4' />
+              </Button>
+            </div>
           </div>
+
+          {widget.description && (
+            <span className='text-sm text-muted-foreground truncate'>
+              {widget.description}
+            </span>
+          )}
         </CardHeader>
 
-        <CardContent className='p-3 pt-0 sm:p-4 sm:pt-0'>
-          {renderContent()}
-        </CardContent>
+        <CardContent>{renderContent()}</CardContent>
       </Card>
     );
   }
