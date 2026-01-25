@@ -69,16 +69,19 @@ export function ConfigBackupDialog() {
         const importedWidgets = result.widgets;
 
         if (importMode === 'replace') {
-          setWidgets(importedWidgets);
+          const widgetsWithNewIds = importedWidgets.map((widget) => ({
+            ...widget,
+            id: crypto.randomUUID(),
+          }));
+          setWidgets(widgetsWithNewIds);
           toast.success('Configuration restored', {
             description: `Replaced dashboard with ${importedWidgets.length} widget${importedWidgets.length !== 1 ? 's' : ''}.`,
           });
         } else {
-          // Merge mode - add widgets with new IDs to avoid conflicts
           importedWidgets.forEach((widget) => {
             addWidget({
               ...widget,
-              id: `${widget.id}-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`,
+              id: crypto.randomUUID(),
             });
           });
           toast.success('Widgets imported', {
