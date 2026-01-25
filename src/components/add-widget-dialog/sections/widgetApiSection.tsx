@@ -14,11 +14,32 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { memo } from 'react';
-import { useFormContext } from 'react-hook-form';
+import { useDebounce } from '@/hooks/useDebounce';
+import { memo, useEffect } from 'react';
+import { useFormContext, useWatch } from 'react-hook-form';
 
 export const WidgetApiSection = memo(() => {
-  const { control } = useFormContext();
+  const { control, setValue } = useFormContext();
+  const apiUrl = useWatch({ control, name: 'api.url' });
+  const debouncedApiUrl = useDebounce(apiUrl, 300);
+
+  useEffect(() => {
+    if (!debouncedApiUrl) return;
+
+    const lowerUrl = debouncedApiUrl.toLowerCase();
+
+    if (lowerUrl.includes('finnhub.io')) {
+      setValue('api.provider', 'finnhub');
+    } else if (lowerUrl.includes('indianapi.in')) {
+      setValue('api.provider', 'indianApi');
+    } else if (lowerUrl.includes('alphavantage.co')) {
+      setValue('api.provider', 'alphaVantage');
+    }
+
+    return () => {
+      setValue('api.provider', 'custom');
+    };
+  }, [debouncedApiUrl, setValue]);
 
   return (
     <div className='space-y-3'>

@@ -76,7 +76,9 @@ export const WidgetCard = memo(
       useApiQuery<unknown>({
         queryKey: ['widget', widget.id, widget.api.provider, widget.api.url],
         client: apiClientFetcher(widget.api.provider),
+        provider: widget.api.provider,
         url: widget.api.url,
+        params: widget.api.params,
         enabled: Boolean(widget.api.url),
       });
 
@@ -142,7 +144,9 @@ export const WidgetCard = memo(
           isDragging
             ? 'opacity-50 scale-95 ring-2 ring-primary'
             : 'opacity-100',
-          className
+          className,
+          widget.type === 'table' && 'col-span-full',
+          widget.type === 'chart' && 'col-span-full xl:col-span-2'
         )}
       >
         <CardHeader className='flex flex-col justify-center items-start gap-2'>

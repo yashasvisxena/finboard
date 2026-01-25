@@ -118,7 +118,7 @@ export const AddWidgetDialogContent = ({
   };
 
   return (
-    <DialogContent className='max-w-2xl min-w-2xl sm:w-full'>
+    <DialogContent className='w-full max-w-2xl overflow-y-auto max-h-[90vh]'>
       <DialogHeader>
         <DialogTitle>{isEditMode ? 'Edit Widget' : 'Add Widget'}</DialogTitle>
         <DialogDescription>

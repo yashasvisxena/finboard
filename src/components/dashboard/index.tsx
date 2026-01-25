@@ -1,18 +1,20 @@
 'use client';
 
 import { Button } from '@/components/ui/button';
+import { useGridColumns } from '@/hooks/useGridColumn';
+import { useVirtualList } from '@/hooks/useVirtualList';
 import { moveItem } from '@/lib/utils';
 import { useWidgetStore } from '@/store/widgetStore';
 import { IWidget } from '@/types/widget.types';
-import { useVirtualizer } from '@tanstack/react-virtual';
 import { Plus } from 'lucide-react';
-import { memo, useCallback, useRef, useState } from 'react';
+import { memo, useCallback, useState } from 'react';
 
 import { AddWidgetDialog } from '../add-widget-dialog/AddWidgetDialog';
 import { WidgetCard } from './WidgetCard';
 
 const VIRTUALIZATION_THRESHOLD = 6;
 const WIDGET_HEIGHT = 280;
+const WIDGETS_PER_ROW = 3;
 
 const WidgetRow = memo(
   ({
@@ -53,7 +55,18 @@ const DashboardLayout = () => {
   const setWidgets = useWidgetStore((state) => state.setWidgets);
   const deleteWidget = useWidgetStore((state) => state.deleteWidget);
   const [draggedId, setDraggedId] = useState<string | null>(null);
-  const parentRef = useRef<HTMLDivElement>(null);
+  const columns = useGridColumns();
+
+  const { parentRef, isVirtualized, totalHeight, virtualRows } = useVirtualList(
+    {
+      items: widgets,
+      itemsPerRow: columns,
+      rowHeight: WIDGET_HEIGHT,
+      overscan: 2,
+      threshold: VIRTUALIZATION_THRESHOLD,
+      extraRows: 1,
+    }
+  );
 
   const handleDragStart = useCallback((id: string) => {
     setDraggedId(id);
@@ -79,21 +92,7 @@ const DashboardLayout = () => {
     setDraggedId(null);
   }, []);
 
-  const widgetRows: IWidget[][] = [];
-  for (let i = 0; i < widgets.length; i += 3) {
-    widgetRows.push(widgets.slice(i, i + 3));
-  }
-
-  const virtualizer = useVirtualizer({
-    count: widgetRows.length + 1,
-    getScrollElement: () => parentRef.current,
-    estimateSize: () => WIDGET_HEIGHT,
-    overscan: 2,
-  });
-
-  const useVirtualization = widgets.length > VIRTUALIZATION_THRESHOLD;
-
-  if (!useVirtualization) {
+  if (!isVirtualized) {
     return (
       <main className='grid gap-3 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 auto-rows-auto py-4 sm:gap-4'>
         {widgets.map((widget) => (
@@ -126,48 +125,44 @@ const DashboardLayout = () => {
     <div ref={parentRef} className='h-[calc(100vh-120px)] overflow-y-auto py-4'>
       <div
         style={{
-          height: `${virtualizer.getTotalSize()}px`,
+          height: `${totalHeight}px`,
           width: '100%',
           position: 'relative',
         }}
       >
-        {virtualizer.getVirtualItems().map((virtualRow) => {
-          const isAddButtonRow = virtualRow.index === widgetRows.length;
-
-          return (
-            <div
-              key={virtualRow.key}
-              className='absolute top-0 left-0 w-full px-1'
-              style={{
-                height: `${virtualRow.size}px`,
-                transform: `translateY(${virtualRow.start}px)`,
-              }}
-            >
-              <div className='grid gap-3 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 sm:gap-4 h-full'>
-                {isAddButtonRow ? (
-                  <AddWidgetDialog>
-                    <Button
-                      className='col-span-1 h-full min-h-[150px] border-2 border-dashed border-border'
-                      variant='outline'
-                    >
-                      <Plus className='size-4' />
-                      Add Widget
-                    </Button>
-                  </AddWidgetDialog>
-                ) : (
-                  <WidgetRow
-                    widgets={widgetRows[virtualRow.index]}
-                    draggedId={draggedId}
-                    onDragStart={handleDragStart}
-                    onDragOver={handleDragOver}
-                    onDragEnd={handleDragEnd}
-                    onDelete={deleteWidget}
-                  />
-                )}
-              </div>
+        {virtualRows.map(({ virtualItem, rowItems, isExtraRow }) => (
+          <div
+            key={virtualItem.key}
+            className='absolute top-0 left-0 w-full px-1'
+            style={{
+              height: `${virtualItem.size}px`,
+              transform: `translateY(${virtualItem.start}px)`,
+            }}
+          >
+            <div className='grid gap-3 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 sm:gap-4 h-full'>
+              {isExtraRow ? (
+                <AddWidgetDialog>
+                  <Button
+                    className='col-span-1 h-full min-h-[150px] border-2 border-dashed border-border'
+                    variant='outline'
+                  >
+                    <Plus className='size-4' />
+                    Add Widget
+                  </Button>
+                </AddWidgetDialog>
+              ) : (
+                <WidgetRow
+                  widgets={rowItems}
+                  draggedId={draggedId}
+                  onDragStart={handleDragStart}
+                  onDragOver={handleDragOver}
+                  onDragEnd={handleDragEnd}
+                  onDelete={deleteWidget}
+                />
+              )}
             </div>
-          );
-        })}
+          </div>
+        ))}
       </div>
     </div>
   );

@@ -29,11 +29,6 @@ export const WidgetRenderer = memo(
             mapping={mapping as ITableMapping}
             page={1}
             pageSize={10}
-            totalItems={
-              (data as any)?.count ||
-              (data as any)?.total ||
-              (Array.isArray(data) ? data.length : 0)
-            }
           />
         );
       case 'chart':

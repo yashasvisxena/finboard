@@ -1,5 +1,6 @@
 'use client';
 
+import { apiKeyFetchers } from '@/constants';
 import {
   type QueryKey,
   type UseQueryResult,
@@ -20,6 +21,10 @@ export interface UseApiQueryArgs<TData = unknown> {
   enabled?: boolean;
   /** Optional refetch interval in milliseconds for auto-refresh. */
   refetchInterval?: number | false;
+  /** API provider to use */
+  provider: string;
+  /** API params to use */
+  params?: Record<string, any>;
 }
 
 export function useApiQuery<TData = unknown>(
@@ -31,8 +36,27 @@ export function useApiQuery<TData = unknown>(
     url,
     config,
     enabled = true,
+    provider,
     refetchInterval,
+    params,
   } = args;
+  let finalParams = {};
+  if (url) {
+    if (provider === 'indianApi') {
+      {
+        finalParams = { ...finalParams, params };
+      }
+    } else if (provider in apiKeyFetchers) {
+      const apiKey = apiKeyFetchers[provider as keyof typeof apiKeyFetchers]();
+      finalParams = { ...apiKey, ...params };
+    } else {
+      finalParams = { ...params };
+    }
+  }
+  const queryParams = {
+    ...config?.params,
+    ...finalParams,
+  };
 
   return useQuery<TData>({
     queryKey,
@@ -41,6 +65,7 @@ export function useApiQuery<TData = unknown>(
     queryFn: async ({ signal }) => {
       const data = await client.get<TData>(url, {
         ...config,
+        params: queryParams,
         signal,
       });
 

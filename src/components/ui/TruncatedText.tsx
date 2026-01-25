@@ -36,7 +36,11 @@ export const TruncatedText = memo(
     }
 
     return (
-      <p ref={textRef} className={className} onMouseEnter={checkTruncation}>
+      <p
+        ref={textRef}
+        className={`${className} cursor-pointer`}
+        onMouseEnter={checkTruncation}
+      >
         {text}
       </p>
     );

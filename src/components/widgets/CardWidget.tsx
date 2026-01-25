@@ -30,63 +30,19 @@ const CardFieldItem = memo(({ field }: { field: FieldData }) => {
     <div className='space-y-1'>
       <TruncatedText
         text={label}
-        className='text-xs text-muted-foreground truncate capitalize'
+        className='text-xs md:text-sm text-muted-foreground truncate capitalize'
       />
       <TruncatedText
         text={formattedValue}
-        className='text-base font-medium truncate'
+        className='text-base md:text-lg font-medium truncate'
       />
     </div>
   );
 });
 CardFieldItem.displayName = 'CardFieldItem';
 
-const VirtualizedCardGrid = memo(({ fields }: { fields: FieldData[] }) => {
-  const parentRef = useRef<HTMLDivElement>(null);
-
-  const rows = useMemo(() => {
-    const result: FieldData[][] = [];
-    for (let i = 0; i < fields.length; i += 2) {
-      result.push(fields.slice(i, i + 2));
-    }
-    return result;
-  }, [fields]);
-
-  const virtualizer = useVirtualizer({
-    count: rows.length,
-    getScrollElement: () => parentRef.current,
-    estimateSize: () => 52,
-    overscan: 3,
-  });
-
-  return (
-    <div ref={parentRef} className='max-h-[200px] overflow-y-auto'>
-      <div
-        className='relative w-full'
-        style={{ height: `${virtualizer.getTotalSize()}px` }}
-      >
-        {virtualizer.getVirtualItems().map((virtualRow) => (
-          <div
-            key={virtualRow.key}
-            className='absolute top-0 left-0 w-full grid grid-cols-2 gap-3'
-            style={{
-              height: `${virtualRow.size}px`,
-              transform: `translateY(${virtualRow.start}px)`,
-            }}
-          >
-            {rows[virtualRow.index].map((field) => (
-              <CardFieldItem key={field.key} field={field} />
-            ))}
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-});
-VirtualizedCardGrid.displayName = 'VirtualizedCardGrid';
-
 const SimpleCardGrid = memo(({ fields }: { fields: FieldData[] }) => (
-  <div className='grid grid-cols-2 gap-3'>
+  <div className='grid grid-cols-1 md:grid-cols-2 gap-3 max-h-[200px] overflow-y-auto'>
     {fields.map((field) => (
       <CardFieldItem key={field.key} field={field} />
     ))}
@@ -116,10 +72,6 @@ export const CardWidget = memo(({ data, mapping }: CardWidgetProps) => {
         No data available.
       </div>
     );
-  }
-
-  if (fields.length > 10) {
-    return <VirtualizedCardGrid fields={fields} />;
   }
 
   return <SimpleCardGrid fields={fields} />;

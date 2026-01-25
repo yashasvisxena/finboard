@@ -10,6 +10,7 @@ import {
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 import { apiKeyFetchers } from '@/constants';
 import { useTestApi } from '@/hooks/useTestApi';
+import { transformParams } from '@/lib/utils';
 import { BarChart3, LayoutGrid, Loader2, Table } from 'lucide-react';
 import { useState } from 'react';
 import { useFormContext } from 'react-hook-form';
@@ -134,16 +135,17 @@ export const WidgetMappingSection = () => {
   const { data, loading, error, testApi } = useTestApi();
 
   const handleTestApi = () => {
+    const apiParams = transformParams(api.paramsArray || []);
     if (api.url) {
       if (provider === 'indianApi') {
-        testApi(api.url, provider, api.params || {});
+        testApi(api.url, provider, apiParams);
       } else if (provider in apiKeyFetchers) {
         const apiKey =
           apiKeyFetchers[provider as keyof typeof apiKeyFetchers]();
-        const params = { ...apiKey, ...api.params };
+        const params = { ...apiKey, ...apiParams };
         testApi(api.url, provider, params);
       } else {
-        testApi(api.url, provider, api.params || {});
+        testApi(api.url, provider, apiParams);
       }
     }
   };
