@@ -16,6 +16,7 @@ import {
 } from 'lucide-react';
 import { memo } from 'react';
 
+import { AddWidgetDialog } from '../add-widget-dialog/AddWidgetDialog';
 import { Button } from '../ui/button';
 
 interface WidgetCardProps {
@@ -53,7 +54,7 @@ export const WidgetCard = memo(
     className,
     onDelete,
   }: WidgetCardProps) => {
-    const { data, isLoading, error } = useApiQuery<unknown>({
+    const { data, isLoading, refetch } = useApiQuery<unknown>({
       queryKey: ['widget', widget.id, widget.api.apiName, widget.api.url],
       client: apiClientFetcher(widget.api.provider || ''),
       url: widget.api.url || '',
@@ -84,13 +85,21 @@ export const WidgetCard = memo(
             </div>
           </div>
           <div className='flex flex-row items-center gap-2'>
-            <Button variant='outline' size={'icon-sm'}>
-              <RefreshCcw />
+            <Button
+              variant='outline'
+              size='icon-sm'
+              onClick={() => refetch()}
+              disabled={isLoading}
+            >
+              <RefreshCcw className={cn(isLoading && 'animate-spin')} />
             </Button>
-            <Button variant='outline' size={'icon-sm'}>
-              <Pencil />
-            </Button>
-            <Button variant='destructive' size={'icon-sm'} onClick={onDelete}>
+            {/* Edit Widget using AddWidgetDialog in edit mode */}
+            <AddWidgetDialog editWidget={widget}>
+              <Button variant='outline' size='icon-sm'>
+                <Pencil className='h-4 w-4' />
+              </Button>
+            </AddWidgetDialog>
+            <Button variant='destructive' size='icon-sm' onClick={onDelete}>
               <Trash2 />
             </Button>
           </div>

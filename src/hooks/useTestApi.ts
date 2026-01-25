@@ -6,18 +6,33 @@ export function useTestApi() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const testApi = async (url: string, params?: Record<string, any>) => {
+  const testApi = async (
+    url: string,
+    params?: Record<string, any>,
+    headers?: Record<string, string>
+  ) => {
     try {
       setLoading(true);
       setError(null);
+      setData(null);
 
-      const res = await axios.get(url, { params });
+      const res = await axios.get(url, { params, headers });
       setData(res.data);
     } catch (err: any) {
-      setError(err?.message ?? 'Failed to fetch API');
+      const message =
+        err?.response?.data?.message ||
+        err?.response?.data?.error ||
+        err?.message ||
+        'Failed to fetch API';
+      setError(message);
     } finally {
       setLoading(false);
     }
+  };
+
+  const reset = () => {
+    setData(null);
+    setError(null);
   };
 
   return {
@@ -25,5 +40,6 @@ export function useTestApi() {
     loading,
     error,
     testApi,
+    reset,
   };
 }

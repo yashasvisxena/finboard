@@ -48,29 +48,6 @@ export const WidgetBasicSection = memo(() => {
           </FormItem>
         )}
       />
-
-      <FormField
-        control={control}
-        name='type'
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel>Widget Type</FormLabel>
-            <Select value={field.value} onValueChange={field.onChange}>
-              <FormControl>
-                <SelectTrigger className='w-full'>
-                  <SelectValue placeholder='Select widget type' />
-                </SelectTrigger>
-              </FormControl>
-              <SelectContent>
-                <SelectItem value='card'>Card</SelectItem>
-                <SelectItem value='table'>Table</SelectItem>
-                <SelectItem value='chart'>Chart</SelectItem>
-              </SelectContent>
-            </Select>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
     </div>
   );
 });

@@ -9,14 +9,20 @@ export const indianStockApi = createApiClient(API_BASE_URLS.INDIAN_API, {
   'X-Api-Key': API_KEYS.INDIAN_API!,
 });
 
+export const alphaVantageApi = createApiClient(API_BASE_URLS.ALPHA_VANTAGE, {
+  'X-Api-Key': API_KEYS.ALPHA_VANTAGE!,
+});
+
 export const customApi = createApiClient('');
 
 export const apiClientFetcher = (provider: string) => {
   switch (provider) {
     case 'finnhub':
       return finnhubApi;
-    case 'indian-stock':
+    case 'indianApi':
       return indianStockApi;
+    case 'alphaVantage':
+      return alphaVantageApi;
     default:
       return customApi;
   }

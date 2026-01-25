@@ -6,6 +6,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
+import { IWidget } from '@/types/widget.types';
 import dynamic from 'next/dynamic';
 import { memo, useState } from 'react';
 
@@ -17,7 +18,7 @@ const DialogContentLazy = dynamic(
   {
     loading: () => (
       <DialogContent className='max-w-xl max-h-[70vh] overflow-y-auto'>
-        <DialogTitle className='sr-only'>Loading Add Widget Dialog</DialogTitle>
+        <DialogTitle className='sr-only'>Loading Widget Dialog</DialogTitle>
         <DialogDescription className='sr-only'>
           Please wait while the widget configuration options are loading.
         </DialogDescription>
@@ -31,19 +32,28 @@ const DialogContentLazy = dynamic(
 
 interface AddWidgetDialogProps {
   children?: React.ReactNode;
+  editWidget?: IWidget;
 }
 
-export const AddWidgetDialog = memo(({ children }: AddWidgetDialogProps) => {
-  const [open, setOpen] = useState(false);
+export const AddWidgetDialog = memo(
+  ({ children, editWidget }: AddWidgetDialogProps) => {
+    const [open, setOpen] = useState(false);
 
-  return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        {children || <Button>Add Widget</Button>}
-      </DialogTrigger>
-      {open && <DialogContentLazy onOpenChange={setOpen} />}
-    </Dialog>
-  );
-});
+    const isEditMode = Boolean(editWidget);
+
+    return (
+      <Dialog open={open} onOpenChange={setOpen}>
+        <DialogTrigger asChild>
+          {children || (
+            <Button>{isEditMode ? 'Edit Widget' : 'Add Widget'}</Button>
+          )}
+        </DialogTrigger>
+        {open && (
+          <DialogContentLazy onOpenChange={setOpen} editWidget={editWidget} />
+        )}
+      </Dialog>
+    );
+  }
+);
 
 AddWidgetDialog.displayName = 'AddWidgetDialog';

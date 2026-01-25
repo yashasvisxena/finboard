@@ -1,5 +1,14 @@
 import z from 'zod';
 
+// Field format types for custom formatting
+export const fieldFormatSchema = z.enum([
+  'text',
+  'number',
+  'currency',
+  'percentage',
+]);
+export type TFieldFormat = z.infer<typeof fieldFormatSchema>;
+
 const chartMappingSchema = z.object({
   type: z.literal('chart'),
   xAxis: z.object({
@@ -17,6 +26,7 @@ const tableMappingSchema = z.object({
       z.object({
         key: z.string(),
         label: z.string().optional(),
+        format: fieldFormatSchema.optional(),
       })
     )
     .min(1),
@@ -29,6 +39,7 @@ const cardMappingSchema = z.object({
       z.object({
         key: z.string(),
         label: z.string().optional(),
+        format: fieldFormatSchema.optional(),
       })
     )
     .min(1),
@@ -44,7 +55,7 @@ export const widgetApiConfigSchema = z
   .object({
     useCustomUrl: z.boolean(),
 
-    provider: z.enum(['finnhub', 'indianApi']).optional(),
+    provider: z.enum(['finnhub', 'indianApi', 'alphaVantage']),
 
     url: z.string().url('Invalid URL').or(z.literal('')).optional(),
 
@@ -65,29 +76,41 @@ export const widgetApiConfigSchema = z
       .optional(),
   })
   .superRefine((data, ctx) => {
-    if (!data.useCustomUrl) {
-      if (!data.provider) {
+    // Provider is always required
+    if (!data.provider) {
+      ctx.addIssue({
+        path: ['provider'],
+        message: 'API provider is required',
+        code: 'custom',
+      });
+      return;
+    }
+
+    // For non-finnhub providers, URL is always required (custom URL only)
+    if (data.provider !== 'finnhub' && !data.url) {
+      ctx.addIssue({
+        path: ['url'],
+        message: 'API URL is required for this provider',
+        code: 'custom',
+      });
+    }
+
+    // For finnhub: either apiName (registry) or URL (custom) is required
+    if (data.provider === 'finnhub') {
+      if (data.useCustomUrl && !data.url) {
         ctx.addIssue({
-          path: ['provider'],
-          message: 'API provider is required',
+          path: ['url'],
+          message: 'Custom API URL is required',
           code: 'custom',
         });
       }
-      if (!data.apiName) {
+      if (!data.useCustomUrl && !data.apiName) {
         ctx.addIssue({
           path: ['apiName'],
           message: 'API name is required',
           code: 'custom',
         });
       }
-    }
-
-    if (data.useCustomUrl && !data.url) {
-      ctx.addIssue({
-        path: ['url'],
-        message: 'Custom API URL is required',
-        code: 'custom',
-      });
     }
   });
 

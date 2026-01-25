@@ -6,16 +6,11 @@ import { persist } from 'zustand/middleware';
 
 interface WidgetStore {
   widgets: IWidget[];
-  uiState: {
-    id: string | null;
-    isEditMode: boolean;
-  };
 
   addWidget: (widget: IWidget) => void;
   setWidgets: (widgets: IWidget[]) => void;
   updateWidget: (id: string, widget: Partial<IWidget>) => void;
   deleteWidget: (id: string) => void;
-  setEditMode: (id: string | null) => void;
 }
 
 export const useWidgetStore = create<WidgetStore>()(
@@ -42,14 +37,6 @@ export const useWidgetStore = create<WidgetStore>()(
         set((s) => ({
           widgets: s.widgets.filter((w) => w.id !== id),
         })),
-
-      setEditMode: (id) =>
-        set({
-          uiState: {
-            id,
-            isEditMode: Boolean(id),
-          },
-        }),
     }),
     {
       name: 'widget-storage',

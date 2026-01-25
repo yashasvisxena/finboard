@@ -12,37 +12,7 @@ import { memo } from 'react';
 import { useFormContext } from 'react-hook-form';
 
 export const WidgetRefreshSection = memo(() => {
-  const { control, watch, setValue } = useFormContext();
-
-  const type = watch('type');
-
-  useEffect(() => {
-    if (!type) return;
-
-    switch (type) {
-      case 'card':
-        setValue('mapping', {
-          type: 'card',
-          fields: [],
-        });
-        break;
-
-      case 'table':
-        setValue('mapping', {
-          type: 'table',
-          columns: [],
-        });
-        break;
-
-      case 'chart':
-        setValue('mapping', {
-          type: 'chart',
-          xAxis: { keys: [] },
-          yAxis: { key: '' },
-        });
-        break;
-    }
-  }, [type]);
+  const { control } = useFormContext();
 
   return (
     <div className='space-y-2'>

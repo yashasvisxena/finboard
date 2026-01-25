@@ -9,4 +9,5 @@ export const API_KEYS = {
 export const API_BASE_URLS = {
   FINNHUB: 'https://finnhub.io/api/v1',
   INDIAN_API: 'https://stock.indianapi.in',
+  ALPHA_VANTAGE: 'https://www.alphavantage.co/query',
 };
