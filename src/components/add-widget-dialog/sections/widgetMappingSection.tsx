@@ -8,19 +8,25 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
-import { API_BASE_URLS, API_KEYS } from '@/constants';
+import { apiKeyFetchers } from '@/constants';
 import { useTestApi } from '@/hooks/useTestApi';
-import { finnhubApiRegistry } from '@/services/api/provider/finnub/api.registry';
 import { BarChart3, LayoutGrid, Loader2, Table } from 'lucide-react';
+import { useState } from 'react';
 import { useFormContext } from 'react-hook-form';
 
-import { JsonTree, SelectedFields } from '../components/ResponseFieldSelect';
+import {
+  ResponseFieldSelect,
+  SelectedFields,
+} from '../components/ResponseFieldSelect';
 
 export const WidgetMappingSection = () => {
   const { watch, setValue, getValues, control } = useFormContext();
+  const provider = watch('api.provider');
   const type = watch('type');
   const api = watch('api');
   const mapping = watch('mapping');
+
+  const [axisMode, setAxisMode] = useState<'xAxis' | 'yAxis'>('xAxis');
 
   const getSelectedFields = () => {
     if (mapping.type === 'card') {
@@ -32,10 +38,14 @@ export const WidgetMappingSection = () => {
     }
 
     if (mapping.type === 'chart') {
-      const keys = [...(mapping.xAxis?.keys || []), mapping.yAxis?.key].filter(
-        Boolean
-      );
-      return keys.map((k: string) => ({ key: k }));
+      const xAxisFields = (mapping.xAxis?.keys || []).map((k: string) => ({
+        key: k,
+        label: 'X-Axis',
+      }));
+      const yAxisField = mapping.yAxis?.key
+        ? [{ key: mapping.yAxis.key, label: 'Y-Axis' }]
+        : [];
+      return [...xAxisFields, ...yAxisField];
     }
 
     return [];
@@ -64,13 +74,21 @@ export const WidgetMappingSection = () => {
         break;
 
       case 'chart':
-        setValue('mapping', {
-          type: 'chart',
-          xAxis: {
-            keys: [...(mapping.xAxis?.keys ?? []), path],
-          },
-          yAxis: mapping.yAxis ?? { key: '' },
-        });
+        if (axisMode === 'yAxis') {
+          setValue('mapping', {
+            type: 'chart',
+            xAxis: mapping.xAxis ?? { keys: [] },
+            yAxis: { key: path },
+          });
+        } else {
+          setValue('mapping', {
+            type: 'chart',
+            xAxis: {
+              keys: [...(mapping.xAxis?.keys ?? []), path],
+            },
+            yAxis: mapping.yAxis ?? { key: '' },
+          });
+        }
         break;
     }
   };
@@ -107,6 +125,7 @@ export const WidgetMappingSection = () => {
             mapping.yAxis?.key === key
               ? { key: '' }
               : (mapping.yAxis ?? { key: '' }),
+          interval: mapping.interval,
         });
         break;
     }
@@ -115,41 +134,15 @@ export const WidgetMappingSection = () => {
   const { data, loading, error, testApi } = useTestApi();
 
   const handleTestApi = () => {
-    const provider = api.provider;
-    const useCustomUrl = api.useCustomUrl;
-
-    if (provider === 'finnhub' && !useCustomUrl) {
-      const selectedApi = finnhubApiRegistry.find(
-        (a) => a.name === api.apiName
-      );
-      if (selectedApi) {
-        const url = `${API_BASE_URLS.FINNHUB}${selectedApi.endpoint}`;
-        const params = { ...api.params, token: API_KEYS.FINNHUB! };
-        testApi(url, params);
+    if (api.url) {
+      if (provider === 'indianApi') {
+        testApi(api.url, provider, api.params || {});
+      } else if (provider in apiKeyFetchers) {
+        const apiKey =
+          apiKeyFetchers[provider as keyof typeof apiKeyFetchers]();
+        const params = { ...apiKey, ...api.params };
+        testApi(api.url, provider, params);
       }
-    } else if (api.url) {
-      let params = { ...api.params };
-      let url = api.url;
-
-      const isRelativePath = url.startsWith('/') && !url.startsWith('//');
-
-      if (provider === 'alphaVantage') {
-        if (isRelativePath) {
-          url = `${API_BASE_URLS.ALPHA_VANTAGE}${url}`;
-        }
-        params = { ...params, apikey: API_KEYS.ALPHA_VANTAGE! };
-      } else if (provider === 'finnhub') {
-        if (isRelativePath) {
-          url = `${API_BASE_URLS.FINNHUB}${url}`;
-        }
-        params = { ...params, token: API_KEYS.FINNHUB! };
-      } else if (provider === 'indianApi') {
-        if (isRelativePath) {
-          url = `${API_BASE_URLS.INDIAN_API}${url}`;
-        }
-      }
-
-      testApi(url, params);
     }
   };
 
@@ -175,14 +168,36 @@ export const WidgetMappingSection = () => {
     }
   };
 
-  const canTest =
-    api.provider &&
-    ((api.provider === 'finnhub' && !api.useCustomUrl && api.apiName) ||
-      api.url);
+  const canTest = !!api.url;
 
   return (
     <div className='space-y-3'>
-      {/* Display Mode Toggle */}
+      <div className='flex flex-col items-center gap-2'>
+        <Button
+          type='button'
+          size='sm'
+          onClick={handleTestApi}
+          className='w-full'
+          disabled={loading || !canTest}
+        >
+          {loading ? (
+            <>
+              <Loader2 className='h-4 w-4 mr-1 animate-spin' />
+              Testing...
+            </>
+          ) : (
+            'Test API'
+          )}
+        </Button>
+        {data !== null && data !== undefined && (
+          <span className='text-sm text-green-600'>
+            ✓ API connection successful!
+          </span>
+        )}
+      </div>
+
+      {error && <p className='text-sm text-red-500'>{error}</p>}
+
       <div className='space-y-2'>
         <FormLabel>Display Mode</FormLabel>
         <ToggleGroup
@@ -206,30 +221,31 @@ export const WidgetMappingSection = () => {
         </ToggleGroup>
       </div>
 
-      <div className='flex items-center gap-2'>
-        <Button
-          type='button'
-          size='sm'
-          onClick={handleTestApi}
-          disabled={loading || !canTest}
-        >
-          {loading ? (
-            <>
-              <Loader2 className='h-4 w-4 mr-1 animate-spin' />
-              Testing...
-            </>
-          ) : (
-            'Test API'
-          )}
-        </Button>
-        {data !== null && data !== undefined && (
-          <span className='text-sm text-green-600'>
-            ✓ API connection successful!
-          </span>
-        )}
-      </div>
-
-      {error && <p className='text-sm text-red-500'>{error}</p>}
+      {type === 'chart' && (
+        <div className='space-y-2'>
+          <FormLabel>Select Axis</FormLabel>
+          <ToggleGroup
+            type='single'
+            value={axisMode}
+            onValueChange={(val) =>
+              val && setAxisMode(val as 'xAxis' | 'yAxis')
+            }
+            className='justify-start'
+          >
+            <ToggleGroupItem value='xAxis' aria-label='X-Axis'>
+              X-Axis (Labels)
+            </ToggleGroupItem>
+            <ToggleGroupItem value='yAxis' aria-label='Y-Axis'>
+              Y-Axis (Values)
+            </ToggleGroupItem>
+          </ToggleGroup>
+          <p className='text-xs text-muted-foreground'>
+            {axisMode === 'xAxis'
+              ? 'Select fields for X-axis labels (e.g., dates, categories)'
+              : 'Select a single field for Y-axis values (e.g., price, count)'}
+          </p>
+        </div>
+      )}
 
       <FormField
         control={control}
@@ -238,7 +254,7 @@ export const WidgetMappingSection = () => {
           <FormItem>
             <FormLabel>Select Fields to Display</FormLabel>
             {data !== null && data !== undefined && (
-              <JsonTree
+              <ResponseFieldSelect
                 data={data}
                 onSelect={addField}
                 selectedPaths={getSelectedPaths()}

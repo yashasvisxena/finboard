@@ -18,6 +18,7 @@ export interface ITableMapping {
   columns: {
     key: TResponseKey;
     label?: string;
+    format?: 'text' | 'number' | 'currency' | 'percentage';
   }[];
 }
 
@@ -27,6 +28,7 @@ export interface ICardMapping {
   fields: {
     key: TResponseKey;
     label?: string;
+    format?: 'text' | 'number' | 'currency' | 'percentage';
   }[];
 }
 

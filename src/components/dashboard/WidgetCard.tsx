@@ -8,9 +8,15 @@ import {
   EmptyMedia,
   EmptyTitle,
 } from '@/components/ui/empty';
+import { CardWidget, ChartWidget, TableWidget } from '@/components/widgets';
 import { useApiQuery } from '@/hooks/useApiQuery';
 import { cn } from '@/lib/utils';
 import { apiClientFetcher } from '@/services/api/core/api-client';
+import {
+  ICardMapping,
+  IChartMapping,
+  ITableMapping,
+} from '@/types/mapping.types';
 import { IWidget } from '@/types/widget.types';
 import {
   ChartBar,
@@ -73,10 +79,10 @@ export const WidgetCard = memo(
   }: WidgetCardProps) => {
     const { data, isLoading, isError, error, refetch, isFetching } =
       useApiQuery<unknown>({
-        queryKey: ['widget', widget.id, widget.api.apiName, widget.api.url],
+        queryKey: ['widget', widget.id, widget.api.provider, widget.api.url],
         client: apiClientFetcher(widget.api.provider || ''),
         url: widget.api.url || '',
-        enabled: Boolean(widget.api.useCustomUrl),
+        enabled: Boolean(widget.api.url),
       });
 
     const renderContent = () => {
@@ -120,19 +126,39 @@ export const WidgetCard = memo(
         );
       }
 
-      return (
-        <div className='space-y-2 text-sm'>
-          <div className='text-xs text-muted-foreground'>
-            <strong>API:</strong> {JSON.stringify(widget.api)}
-          </div>
-          <div className='text-xs text-muted-foreground'>
-            <strong>Mapping:</strong> {JSON.stringify(widget.mapping)}
-          </div>
-          <pre className='text-xs bg-muted p-2 rounded-md overflow-auto max-h-[120px]'>
-            {JSON.stringify(data, null, 2)}
-          </pre>
-        </div>
-      );
+      switch (widget.type) {
+        case 'table':
+          return (
+            <TableWidget
+              data={data}
+              mapping={widget.mapping as ITableMapping}
+              page={1}
+              pageSize={10}
+              totalItems={
+                (data as any)?.count ||
+                (data as any)?.total ||
+                (Array.isArray(data) ? data.length : 0)
+              }
+            />
+          );
+        case 'chart':
+          return (
+            <ChartWidget
+              data={data}
+              mapping={widget.mapping as IChartMapping}
+            />
+          );
+        case 'card':
+          return (
+            <CardWidget data={data} mapping={widget.mapping as ICardMapping} />
+          );
+        default:
+          return (
+            <div className='text-sm text-muted-foreground'>
+              Unknown widget type: {widget.type}
+            </div>
+          );
+      }
     };
 
     return (

@@ -46,8 +46,7 @@ export const AddWidgetDialogContent = ({
     if (!editWidget) return [];
     return Object.entries(editWidget.api.params || {}).map(([key, value]) => ({
       key,
-      type: typeof value as 'string' | 'number' | 'boolean',
-      value,
+      value: String(value),
     }));
   };
 
@@ -59,10 +58,8 @@ export const AddWidgetDialogContent = ({
           description: editWidget.description || '',
           type: editWidget.type,
           api: {
-            provider: editWidget.api.provider || 'finnhub',
-            apiName: editWidget.api.apiName || '',
+            provider: editWidget.api.provider || 'custom',
             refreshInterval: editWidget.api.refreshInterval || 30,
-            useCustomUrl: editWidget.api.useCustomUrl || false,
             url: editWidget.api.url || '',
             params: editWidget.api.params || {},
             paramsArray: getParamsArray(),
@@ -74,10 +71,8 @@ export const AddWidgetDialogContent = ({
           description: '',
           type: 'card',
           api: {
-            provider: 'finnhub',
-            apiName: '',
+            provider: 'custom',
             refreshInterval: 30,
-            useCustomUrl: false,
             url: '',
             params: {},
             paramsArray: [],
@@ -91,14 +86,12 @@ export const AddWidgetDialogContent = ({
 
   const onSubmit = (data: TCreateWidgetSchema) => {
     const apiParams = transformParams(data.api.paramsArray || []);
-    const apiName = data.api.apiName || (data.api.useCustomUrl ? 'custom' : '');
 
     const widgetData = {
       ...data,
       api: {
         ...data.api,
         params: apiParams,
-        apiName: apiName,
       },
     };
 
@@ -107,7 +100,6 @@ export const AddWidgetDialogContent = ({
     if (isEditMode && editWidget) {
       // Update existing widget
       updateWidget(editWidget.id, widgetData as any);
-      console.log('Widget updated:', widgetData);
     } else {
       // Add new widget
       const widget = {
@@ -115,7 +107,6 @@ export const AddWidgetDialogContent = ({
         id: crypto.randomUUID(),
       };
       addWidget(widget as any);
-      console.log('Widget added:', widget);
       form.reset();
     }
 
@@ -127,7 +118,7 @@ export const AddWidgetDialogContent = ({
   };
 
   return (
-    <DialogContent className='max-w-xl w-[calc(100%-2rem)] sm:w-full'>
+    <DialogContent className='max-w-2xl min-w-2xl sm:w-full'>
       <DialogHeader>
         <DialogTitle>{isEditMode ? 'Edit Widget' : 'Add Widget'}</DialogTitle>
         <DialogDescription>
@@ -142,7 +133,7 @@ export const AddWidgetDialogContent = ({
           onSubmit={form.handleSubmit(onSubmit, onError)}
           className='space-y-2'
         >
-          <div className='space-y-2 max-h-[70vh] overflow-y-auto py-2 px-1'>
+          <div className='space-y-3 max-h-[70vh] overflow-y-auto py-2 px-1'>
             <WidgetBasicSection />
             <WidgetApiSection />
             <WidgetParamsField />

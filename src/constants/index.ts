@@ -11,3 +11,8 @@ export const API_BASE_URLS = {
   INDIAN_API: 'https://stock.indianapi.in',
   ALPHA_VANTAGE: 'https://www.alphavantage.co/query',
 };
+
+export const apiKeyFetchers: Record<string, () => Record<string, string>> = {
+  alphaVantage: () => ({ apikey: API_KEYS.ALPHA_VANTAGE! }),
+  finnhub: () => ({ token: API_KEYS.FINNHUB! }),
+};

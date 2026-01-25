@@ -12,20 +12,15 @@ export function moveItem<T>(array: T[], from: number, to: number): T[] {
   return result;
 }
 
-export function transformParams(paramsArray: any[]) {
+export function transformParams(
+  paramsArray: { key: string; value: string }[]
+): Record<string, string> {
   return paramsArray.reduce(
     (acc, item) => {
       if (!item.key) return acc;
-
-      acc[item.key] =
-        item.type === 'number'
-          ? Number(item.value)
-          : item.type === 'boolean'
-            ? Boolean(item.value)
-            : item.value;
-
+      acc[item.key] = item.value;
       return acc;
     },
-    {} as Record<string, string | number | boolean>
+    {} as Record<string, string>
   );
 }

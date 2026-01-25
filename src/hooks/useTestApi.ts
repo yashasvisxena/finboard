@@ -1,4 +1,4 @@
-import axios from 'axios';
+import { apiClientFetcher } from '@/services/api/core/api-client';
 import { useState } from 'react';
 
 export function useTestApi() {
@@ -8,16 +8,16 @@ export function useTestApi() {
 
   const testApi = async (
     url: string,
-    params?: Record<string, any>,
-    headers?: Record<string, string>
+    provider: string,
+    params?: Record<string, any>
   ) => {
     try {
       setLoading(true);
       setError(null);
       setData(null);
-
-      const res = await axios.get(url, { params, headers });
-      setData(res.data);
+      const apiClient = apiClientFetcher(provider);
+      const res = await apiClient.get(url, { params });
+      setData(res);
     } catch (err: any) {
       const message =
         err?.response?.data?.message ||
