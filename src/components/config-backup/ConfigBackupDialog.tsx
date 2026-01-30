@@ -16,20 +16,18 @@ import {
   readFileAsText,
 } from '@/lib/configBackup';
 import { useWidgetStore } from '@/store/widgetStore';
-import { Download, FolderUp, Upload } from 'lucide-react';
+import { ArrowDown, ArrowUp, Download, Upload } from 'lucide-react';
 import { useCallback, useRef, useState } from 'react';
 import { toast } from 'sonner';
 
+import { Tooltip, TooltipContent, TooltipTrigger } from '../ui/tooltip';
+
 type ImportMode = 'replace' | 'merge';
 
-export function ConfigBackupDialog() {
+export function ConfigExportDialog() {
   const [open, setOpen] = useState(false);
-  const [importMode, setImportMode] = useState<ImportMode>('replace');
-  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const widgets = useWidgetStore((state) => state.widgets);
-  const setWidgets = useWidgetStore((state) => state.setWidgets);
-  const addWidget = useWidgetStore((state) => state.addWidget);
 
   const handleExport = useCallback(() => {
     if (widgets.length === 0) {
@@ -52,6 +50,62 @@ export function ConfigBackupDialog() {
       });
     }
   }, [widgets]);
+
+  return (
+    <Dialog open={open} onOpenChange={setOpen}>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <DialogTrigger asChild>
+            <Button variant='outline' size='icon'>
+              <ArrowDown className='size-4' />
+            </Button>
+          </DialogTrigger>
+        </TooltipTrigger>
+        <TooltipContent>
+          <p>Export Configuration</p>
+        </TooltipContent>
+      </Tooltip>
+      <DialogContent className='sm:max-w-md'>
+        <DialogHeader>
+          <DialogTitle>Dashboard Configuration</DialogTitle>
+          <DialogDescription>
+            Export your dashboard configuration to a file.
+          </DialogDescription>
+        </DialogHeader>
+
+        <div className='grid gap-4 py-4'>
+          <div className='flex flex-col gap-2 p-4 border rounded-lg'>
+            <div className='flex items-center gap-2'>
+              <Download className='size-5 text-primary' />
+              <h4 className='font-medium'>Export Configuration</h4>
+            </div>
+            <p className='text-sm text-muted-foreground'>
+              Download your current dashboard configuration as a JSON file.
+            </p>
+            <Button onClick={handleExport} className='mt-2'>
+              <Download className='size-4 mr-2' />
+              Export ({widgets.length} widget{widgets.length !== 1 ? 's' : ''})
+            </Button>
+          </div>
+        </div>
+
+        <DialogFooter>
+          <Button variant='ghost' onClick={() => setOpen(false)}>
+            Close
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+export function ConfigImportDialog() {
+  const [open, setOpen] = useState(false);
+  const [importMode, setImportMode] = useState<ImportMode>('replace');
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const setWidgets = useWidgetStore((state) => state.setWidgets);
+  const addWidget = useWidgetStore((state) => state.addWidget);
 
   const handleImport = useCallback(
     async (file: File) => {
@@ -119,37 +173,27 @@ export function ConfigBackupDialog() {
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        <Button variant='outline'>
-          <FolderUp className='size-4 mr-2' />
-          Backup
-        </Button>
-      </DialogTrigger>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <DialogTrigger asChild>
+            <Button variant='outline' size='icon'>
+              <ArrowUp className='size-4' />
+            </Button>
+          </DialogTrigger>
+        </TooltipTrigger>
+        <TooltipContent>
+          <p>Import Configuration</p>
+        </TooltipContent>
+      </Tooltip>
       <DialogContent className='sm:max-w-md'>
         <DialogHeader>
           <DialogTitle>Dashboard Configuration</DialogTitle>
           <DialogDescription>
-            Export your dashboard configuration to a file or import a previously
-            saved configuration.
+            Import your dashboard configuration from a file.
           </DialogDescription>
         </DialogHeader>
 
         <div className='grid gap-4 py-4'>
-          {/* Export Section */}
-          <div className='flex flex-col gap-2 p-4 border rounded-lg'>
-            <div className='flex items-center gap-2'>
-              <Download className='size-5 text-primary' />
-              <h4 className='font-medium'>Export Configuration</h4>
-            </div>
-            <p className='text-sm text-muted-foreground'>
-              Download your current dashboard configuration as a JSON file.
-            </p>
-            <Button onClick={handleExport} className='mt-2'>
-              <Download className='size-4 mr-2' />
-              Export ({widgets.length} widget{widgets.length !== 1 ? 's' : ''})
-            </Button>
-          </div>
-
           {/* Import Section */}
           <div className='flex flex-col gap-2 p-4 border rounded-lg'>
             <div className='flex items-center gap-2'>

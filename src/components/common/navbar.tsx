@@ -1,14 +1,21 @@
 'use client';
 
 import { useWidgetStore } from '@/store/widgetStore';
+import { IWidget } from '@/types/widget.types';
 import { useMemo } from 'react';
 
+import { preset } from '../../../public/preset';
 import { AddWidgetDialog } from '../add-widget-dialog/AddWidgetDialog';
-import { ConfigBackupDialog } from '../config-backup/ConfigBackupDialog';
+import {
+  ConfigExportDialog,
+  ConfigImportDialog,
+} from '../config-backup/ConfigBackupDialog';
+import { Button } from '../ui/button';
 import { ThemeToggle } from './ThemeToggle';
 
 const Navbar = () => {
   const widgetsCount = useWidgetStore((state) => state.widgets.length);
+  const setWidgets = useWidgetStore((state) => state.setWidgets);
 
   const statusText = useMemo(
     () =>
@@ -27,7 +34,14 @@ const Navbar = () => {
         </p>
       </div>
       <nav className='flex gap-2 items-center'>
-        <ConfigBackupDialog />
+        <Button
+          variant='outline'
+          onClick={() => setWidgets([...(preset.widgets as IWidget[])])}
+        >
+          Preset
+        </Button>
+        <ConfigExportDialog />
+        <ConfigImportDialog />
         <AddWidgetDialog />
         <ThemeToggle />
       </nav>
